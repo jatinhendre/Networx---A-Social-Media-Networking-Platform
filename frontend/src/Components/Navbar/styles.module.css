@@ -1,0 +1,25 @@
+.heroButton {
+  padding: 0.8rem 2.1rem;
+  border-radius: 999px;
+  border: none;
+  outline: none;
+  background: #e024d8;      /* magenta/pink */
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.98rem;
+  cursor: pointer;
+  box-shadow: 0 12px 30px rgba(224, 36, 216, 0.45);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.heroButton:hover {
+  background: #be1cb3;
+  transform: translateY(-1px);
+  box-shadow: 0 16px 40px rgba(224, 36, 216, 0.55);
+}
+.container>nav{
+    display: flex;
+    padding:1.2rem;
+    justify-content: space-between;
+    align-items: center;
+}

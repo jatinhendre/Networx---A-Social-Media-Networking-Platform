@@ -1,0 +1,65 @@
+.homeContainer {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #fafafa;
+}
+
+/* Sidebar takes 20% space, feed takes rest */
+.homeContainer > div:nth-child(odd) {
+  flex: 0.22; 
+}
+
+.homeContainer > div:nth-child(even) {
+  flex: 0.78;
+}
+
+/* Sidebar Box */
+.homeContainer_left {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  align-items: flex-start;
+  padding: 1rem 1.3rem;
+  border-right: 1px solid #e6e6e6;
+}
+
+/* Each sidebar option row */
+.sideBarOptions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  transition: background-color 0.18s ease, color 0.2s ease;
+}
+
+/* Icon appearance */
+.sideBarOptions > svg {
+  height: 1.6rem;
+  width: 1.6rem;
+  stroke: #444;
+}
+
+/* Hover Effect */
+.sideBarOptions:hover {
+  background: #f0f0ff;
+  color: #1f3bb2;
+}
+
+.sideBarOptions:hover svg {
+  stroke: #1f3bb2;
+}
+
+/* Active feel (Optional) */
+.sideBarOptionsActive {
+  background: #dbe4ff;
+  color: #2643d4;
+}
+
+.sideBarOptionsActive svg {
+  stroke: #2643d4;
+}

@@ -199,3 +199,59 @@
   .singleOption_optionContainer { width: 34px; height: 34px; border-radius: 8px; }
   .optionsContainer { gap: 8px; margin-top: 8px; }
 }
+.commentSection {
+  padding: 0.8rem;
+  border-top: 1px solid #e5e5e5;
+  background: #fafafa;
+}
+
+.singleComment {
+  display: flex;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+
+.singleComment img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.commentUser {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.commentText {
+  font-size: 0.85rem;
+  color: #333;
+}
+
+.noComment {
+  font-size: 0.85rem;
+  color: gray;
+  margin-bottom: 0.5rem;
+}
+
+.addComment {
+  display: flex;
+  gap: 0.5rem;
+  border-top: 1px solid #ddd;
+  padding-top: 0.5rem;
+}
+
+.addComment input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.9rem;
+}
+
+.addComment button {
+  border: none;
+  background: none;
+  color: #0095f6;
+  font-weight: 600;
+  cursor: pointer;
+}

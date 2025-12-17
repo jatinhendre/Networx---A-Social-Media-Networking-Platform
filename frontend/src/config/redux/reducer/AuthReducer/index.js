@@ -4,6 +4,8 @@ import {
   registerUser,
   getAboutUser,
   getAllUsers,
+  getConnectionRequests,
+  getMyConnections,
 } from "@/config/redux/action/AuthAction";
 
 const initialState = {
@@ -94,8 +96,6 @@ const authSlice = createSlice({
 
         state.isError = true;
       })
-
-      // FETCH USER PROFILE
       .addCase(getAboutUser.pending, (state) => {
         state.isLoading = true;
         state.message = "Fetching User Profile......";
@@ -122,6 +122,18 @@ const authSlice = createSlice({
       .addCase(getAllUsers.fulfilled, (state, action) => {
         state.allUsers = action.payload;
         state.all_profile_fetched = true;
+      })
+      .addCase(getConnectionRequests.fulfilled, (state, action) => {
+        state.connectionRequests = action.payload;
+      })
+      .addCase(getMyConnections.fulfilled, (state, action) => {
+        state.connections = action.payload;
+      })
+      .addCase(getMyConnections.rejected, (state, action) => {
+        state.connections = [];
+      }) 
+      .addCase(getConnectionRequests.rejected, (state, action) => {
+        state.connectionRequests = [];
       });
   },
 });

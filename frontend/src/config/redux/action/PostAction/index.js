@@ -84,3 +84,41 @@ export const incrementLikes = createAsyncThunk(
         }
     }
 )
+
+
+export const getComments = createAsyncThunk(
+    "post/getComments",
+    async (postId, thunkAPI) => {
+    try{
+        const response = await clientServer.get("/getComments",{
+            params:{
+                postId: postId
+            }
+        });
+
+        if(response.status === 200){
+            return thunkAPI.fulfillWithValue(response.data)
+        }else{
+            return thunkAPI.rejectWithValue("Fetching Comments failed");
+        }
+    }catch(err){
+        return thunkAPI.rejectWithValue(err.response.data);
+    }
+}
+)
+
+export const postComment = createAsyncThunk(
+    "post/postComment",
+    async (commentData, thunkAPI) => {
+        try{
+            const response = await clientServer.post("/comment", commentData);
+            if(response.status === 201){
+                return thunkAPI.fulfillWithValue(response.data);
+            }else{
+                return thunkAPI.rejectWithValue("Posting Comment failed");
+            }
+        }catch(err){
+            return thunkAPI.rejectWithValue(err.response.data);
+        }
+    }
+)

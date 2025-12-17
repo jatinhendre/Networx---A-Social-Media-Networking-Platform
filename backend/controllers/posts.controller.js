@@ -1,5 +1,6 @@
 import Post from "../models/posts.model.js";
 import User from "../models/users.model.js";
+import Comment from "../models/comments.model.js";
 
 export const activeCheck = (req, res) => {
     return res.status(200).json({ message: "Posts controller is active && Server Is Also Running" })
@@ -69,7 +70,8 @@ export const postComment = async(req, res) => {
             body: commentBody,  
         })
         await comment.save();
-        return res.status(201).json({ message: "Comment added successfully", post: post }); 
+        const populatedComment = await comment.populate('userId', 'name username profilePicture');
+        return res.status(201).json(populatedComment); 
     }catch(err){
         return res.status(500).json({ message: "Server error", error: err.message });       
     }
@@ -78,7 +80,7 @@ export const postComment = async(req, res) => {
 
 export const getComments = async(req, res) => {
     try{
-        const { postId } = req.query;
+        const { postId } = req.query.postId;
         const post = await Post.findOne({ _id: postId });
         if (!post) {
             return res.status(404).json({ message: "Post not found." });

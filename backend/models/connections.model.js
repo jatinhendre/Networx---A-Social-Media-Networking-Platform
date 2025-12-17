@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import {Schema} from 'mongoose';
 
 const connectionSchema = new mongoose.Schema({
-    userID:{
+    userId:{
         type: Schema.Types.ObjectId,
         ref: 'User',
     },

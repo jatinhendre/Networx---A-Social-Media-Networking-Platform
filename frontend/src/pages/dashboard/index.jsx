@@ -6,6 +6,8 @@ import {
   getAllPosts,
   deletePost,
   incrementLikes,
+  getComments,
+  postComment,
 } from "@/config/redux/action/PostAction";
 import UserLayout from "../layouts/UserLayout";
 import DashboardLayout from "../layouts/DashboardLayout";
@@ -14,13 +16,15 @@ import styles from "./index.module.css";
 
 function Dashboard() {
   const [postContent, setPostContent] = useState("");
+  const [commentContent, setCommentContent] = useState("");
   const [fileContent, setFileContent] = useState(null);
-
+  const [openCommentSection, setOpenCommentSection] = useState(null);
   const authState = useSelector((state) => state.auth);
   const postState = useSelector((state) => state.post);
 
   const dispatch = useDispatch();
   const router = useRouter();
+
 
   const handlePost = async () => {
     await dispatch(
@@ -186,7 +190,16 @@ function Dashboard() {
                     </button>
 
                     {/* Comment (placeholder) */}
-                    <div className={styles.singleOption_optionContainer}>
+                    <div onClick={()=>{
+                      if(openCommentSection===post._id){
+                        setOpenCommentSection(null);
+                      }else{
+                        setOpenCommentSection(post._id);
+                        dispatch(getComments({
+                          postId: post._id
+                        }));
+                      }
+                    }} className={styles.singleOption_optionContainer}>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -230,11 +243,58 @@ function Dashboard() {
                       </svg>
                     </button>
                   </div>
-                </div>
-              );
-            })}
+                      {openCommentSection === post._id && (
+  <div className={styles.commentSection}>
+    
+    {/* Existing comments */}
+    {postState.comments && postState.comments.length > 0 ? (
+      postState.comments.map((comment) => (
+        <div key={comment._id} className={styles.singleComment}>
+          <img
+            src={`${BASE_URL}/${comment.userId?.profilePicture}`}
+            alt="user"
+          />
+          <div>
+            <p className={styles.commentUser}>
+              {comment.userId?.username}
+            </p>
+            <p className={styles.commentText}>{comment.body}</p>
           </div>
         </div>
+      ))
+    ) : (
+      <p className={styles.noComment}>Be the first to comment</p>
+    )}
+
+    {/* Add comment */}
+    <div className={styles.addComment}>
+      <input
+        type="text"
+        placeholder="Add a comment..."
+        value={commentContent}
+        onChange={(e) => setCommentContent(e.target.value)}
+      />
+      <button onClick={
+        commentContent!="" ?()=>{
+          dispatch(postComment({
+              postId: post._id,
+              token:localStorage.getItem("token"),
+              commentBody:commentContent
+            })),
+          setCommentContent("")
+        }:null
+      }>Post</button>
+    </div>
+
+  </div>
+)}
+
+                </div>
+              );
+              
+            })}
+          </div>
+        </div>   
       </DashboardLayout>
     </UserLayout>
   );

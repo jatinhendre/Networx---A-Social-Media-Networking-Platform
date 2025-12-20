@@ -6,12 +6,14 @@ import {
   getAllUsers,
   getConnectionRequests,
   getMyConnections,
+  acceptConnectionRequest,
 } from "@/config/redux/action/AuthAction";
 
 const initialState = {
   isLoading: false,
   loggedIn: false,
   message: "",
+  token:null,
   isError: false,
   isSuccess: false,
   profileFetched: false,
@@ -19,8 +21,8 @@ const initialState = {
   isTokenThere: false,
   connections: [],
   connectionRequests: [],
-  allUsers:[],
-  all_profile_fetched:false,
+  allUsers: [],
+  all_profile_fetched: false,
 };
 
 const authSlice = createSlice({
@@ -39,6 +41,7 @@ const authSlice = createSlice({
 
     setIsTokenThere: (state) => {
       state.isTokenThere = true;
+      state.token=  localStorage.getItem("token");
     },
 
     setIsTokenNotThere: (state) => {
@@ -96,6 +99,8 @@ const authSlice = createSlice({
 
         state.isError = true;
       })
+
+      // GET USER PROFILE
       .addCase(getAboutUser.pending, (state) => {
         state.isLoading = true;
         state.message = "Fetching User Profile......";
@@ -119,21 +124,56 @@ const authSlice = createSlice({
 
         state.isError = true;
       })
+
+      // GET ALL USERS
       .addCase(getAllUsers.fulfilled, (state, action) => {
         state.allUsers = action.payload;
         state.all_profile_fetched = true;
       })
+
+      // GET CONNECTION REQUESTS
+      .addCase(getConnectionRequests.pending, (state) => {
+        state.isLoading = true;
+      })
       .addCase(getConnectionRequests.fulfilled, (state, action) => {
         state.connectionRequests = action.payload;
+        state.isLoading = false;
+      })
+      .addCase(getConnectionRequests.rejected, (state, action) => {
+        state.connectionRequests = [];
+        state.isLoading = false;
+      })
+
+      // GET MY CONNECTIONS
+      .addCase(getMyConnections.pending, (state) => {
+        state.isLoading = true;
       })
       .addCase(getMyConnections.fulfilled, (state, action) => {
         state.connections = action.payload;
+        state.isLoading = false;
       })
       .addCase(getMyConnections.rejected, (state, action) => {
         state.connections = [];
-      }) 
-      .addCase(getConnectionRequests.rejected, (state, action) => {
-        state.connectionRequests = [];
+        state.isLoading = false;
+      })
+
+      // ACCEPT/REJECT CONNECTION REQUEST
+      .addCase(acceptConnectionRequest.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(acceptConnectionRequest.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.message = action.payload.message || "Request processed successfully";
+        state.isSuccess = true;
+      })
+      .addCase(acceptConnectionRequest.rejected, (state, action) => {
+        state.isLoading = false;
+        const payload = action.payload;
+        state.message =
+          (typeof payload === "string"
+            ? payload
+            : payload?.message) || "Failed to process request";
+        state.isError = true;
       });
   },
 });

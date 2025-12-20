@@ -1,0 +1,109 @@
+.feedContainer {
+  margin-top: 2rem;
+}
+
+.postsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.postCard {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: box-shadow 0.2s;
+}
+
+.postCard:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.postHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.userName {
+  font-weight: bold;
+  color: #333;
+}
+
+.postTime {
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.deleteButton {
+  margin-left: auto;
+  padding: 0.4rem 0.8rem;
+  background: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.deleteButton:hover {
+  background: #cc0000;
+}
+
+.postBody {
+  color: #333;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.postImage {
+  width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.postActions {
+  display: flex;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.likeButton,
+.commentButton {
+  padding: 0.5rem 1rem;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.likeButton:hover {
+  background: #ffe0e0;
+}
+
+.commentButton:hover {
+  background: #e0f0ff;
+}
+
+.emptyState {
+  text-align: center;
+  color: #999;
+  padding: 2rem;
+  background: #f9f9f9;
+  border-radius: 8px;
+}

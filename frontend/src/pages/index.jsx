@@ -8,39 +8,55 @@ export default function Home() {
 
   return (
     <UserLayout>
-    <div className={styles.heroWrapper}>
-      <div className={styles.hero}>
-        {/* LEFT */}
-        <div className={styles.heroLeft}>
-          <h1 className={styles.heroTitle}>
-            Connect with Friends without <br /> Exaggeration
-          </h1>
+      <section className={styles.heroWrapper}>
+        <div className={styles.hero}>
 
-          <p className={styles.heroSubtitle}>
-            A true social media platform, with stories and connections – no bluffs.
-          </p>
+          {/* LEFT */}
+          <div className={styles.heroLeft}>
+            <span className={styles.heroBadge}>🚀 New Social Experience</span>
 
-          <button
-            className={styles.heroButton}
-            onClick={() => router.push("/login")}
-          >
-            Join Now
-          </button>
+            <h1 className={styles.heroTitle}>
+              Connect with Friends <br />
+              <span className={styles.gradientText}>Without Exaggeration</span>
+            </h1>
+
+            <p className={styles.heroSubtitle}>
+              A genuine social media platform focused on real stories,
+              real people, and meaningful connections — no bluffs, no noise.
+            </p>
+
+            <div className={styles.heroActions}>
+              <button
+                className={styles.primaryButton}
+                onClick={() => router.push("/login")}
+              >
+                Join Now
+              </button>
+
+              <button
+                className={styles.secondaryButton}
+                onClick={() => router.push("/login")}
+              >
+                Learn More
+              </button>
+            </div>
+          </div>
+
+          {/* RIGHT */}
+          <div className={styles.heroRight}>
+            <div className={styles.imageWrapper}>
+              <Image
+                src="/images/image.png"
+                alt="People connecting illustration"
+                fill
+                priority
+                className={styles.heroImage}
+              />
+            </div>
+          </div>
+
         </div>
-
-        {/* RIGHT */}
-        <div className={styles.heroRight}>
-          {/* apni image lagao yaha */}
-          <Image
-            src="/images/image.png"
-            alt="People connecting illustration"
-            className={styles.heroImage}
-            width={140}
-            height={140}
-          />
-        </div>
-      </div>
-    </div>
+      </section>
     </UserLayout>
   );
 }

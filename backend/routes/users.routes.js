@@ -1,5 +1,4 @@
 import {Router}from 'express';
-import {activeCheck} from '../controllers/posts.controller.js';
 import {acceptConnectionRequest, connectionRequest, downloadProfile, getAllUserProfiles, getMyConnections, getUserProfileBasedOnUsername, myConnectionRequests, register, updateUser} from '../controllers/user.controller.js';
 import {login} from '../controllers/user.controller.js';
 import multer from 'multer';
@@ -27,9 +26,9 @@ router.route('/get_user_profile').get(getProfile)
 router.route('/update_profile_data').post(updateProfileData)
 router.route('/user/getAllProfiles').get(getAllUserProfiles)
 router.route('/user/downloadResume').get(downloadProfile)
-router.route('/user/send_connection_request').post(connectionRequest)
+router.route('/user/sendConnectionRequest').post(connectionRequest)
 router.route('/user/getMyConnections').get(getMyConnections)
-router.route('/user/user_connection_request').get(myConnectionRequests)
-router.route('/user/accept_connection_request').post(acceptConnectionRequest)
+router.route('/user/myConnectionRequest').get(myConnectionRequests)
+router.route('/user/acceptConnectionRequest').post(acceptConnectionRequest)
 router.route('/user/getProfileOnUsername').get(getUserProfileBasedOnUsername)
 export default router;

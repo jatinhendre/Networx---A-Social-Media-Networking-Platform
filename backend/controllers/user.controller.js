@@ -1,4 +1,3 @@
-
 import User from '../models/users.model.js';
 import bcrypt from 'bcryptjs';
 import Profile from '../models/profile.model.js';
@@ -41,6 +40,11 @@ export const register = async (req, res) => {
     }
     const user = await User.findOne({ email });
     if (user) return res.status(400).json({ message: "User already exists" });
+    const userName = await User.findOne({ username });
+    if (userName) return res.status(400).json({ message: "Username already taken" });
+    if(password.length < 8 || password.length > 20 || !/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/\d/.test(password) || !/[!@#$%^&*(),.?":{}|<>]/.test(password)){
+        return res.status(400).json({ message: "Password must be 8-20 characters long and contain at least one uppercase letter, lowercase letter, digit, and special character." });
+    }
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({ username, name, email, password: hashedPassword });
     await newUser.save();
@@ -148,6 +152,20 @@ export const downloadProfile = async(req, res)=>{
     return res.json({"message":outputPath})
 }
 
+export const getUserProfileBasedOnUsername = async(req, res)=>{
+    try{
+        const {username} = req.query;
+        const user = await User.findOne({username:username});
+        if(!user){
+            return res.status(404).json({message:"User not found!!"});
+        }   
+        const profile = await Profile.findOne({userId:user._id}).populate('userId', 'name email profilePicture username');
+        return res.status(200).json(profile);
+    }catch(error){
+        return res.status(500).json({message:"Server error", error:error.message});
+    }   
+}
+
 export const connectionRequest = async(req, res)=>{
     console.log(req.body);
     const {token, connectionId} = req.body;
@@ -194,16 +212,21 @@ export const myConnectionRequests = async(req, res)=>{
 
 export const getMyConnections = async(req, res)=>{  
     try{
-    const {token} = req.query;
-    const user = await User.findOne({token:token});
-    if(!user){
-        return res.status(401).json({message:"User not found!!"});          
+        const {token} = req.query;
+        const user = await User.findOne({token:token});
+        if(!user){
+            return res.status(401).json({message:"User not found!!"});          
+        }   
+        const connections = await Connection.find({
+            $or: [
+                { userId: user._id },
+                { connectionId: user._id }
+            ]
+        }).populate('connectionId', 'name email profilePicture username').populate('userId', 'name email profilePicture username');
+        return res.status(200).json(connections);
+    }catch(error){
+        return res.status(500).json({message:"Server error", error:error.message});
     }   
-    const connections = await Connection.find({userId:user._id}).populate('connectionId', 'name email profilePicture username');
-    return res.status(200).json(connections);
-}catch(error){
-    return res.status(500).json({message:"Server error", error:error.message});
-}   
 }
 
 export const acceptConnectionRequest = async(req, res)=>{
@@ -229,16 +252,3 @@ export const acceptConnectionRequest = async(req, res)=>{
     }
 }
 
-export const getUserProfileBasedOnUsername = async(req, res)=>{
-    try{
-        const {username} = req.query;
-        const user = await User.findOne({username:username});
-        if(!user){
-            return res.status(404).json({message:"User not found!!"});
-        }   
-        const profile = await Profile.findOne({userId:user._id}).populate('userId', 'name email profilePicture username');
-        return res.status(200).json(profile);
-    }catch(error){
-        return res.status(500).json({message:"Server error", error:error.message});
-    }   
-}

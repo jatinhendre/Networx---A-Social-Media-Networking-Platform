@@ -19,6 +19,7 @@ function Discover() {
   }, [authState.all_profile_fetched, dispatch]);
 
   const filteredUsers = authState.allUsers?.filter((profile) => {
+    if(profile.userId?._id === authState.user?._id) return false;
   const username = profile.userId?.username?.toLowerCase() || "";
   const name = profile.userId?.name?.toLowerCase() || "";
   return (

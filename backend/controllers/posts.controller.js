@@ -2,9 +2,7 @@ import Post from "../models/posts.model.js";
 import User from "../models/users.model.js";
 import Comment from "../models/comments.model.js";
 
-export const activeCheck = (req, res) => {
-    return res.status(200).json({ message: "Posts controller is active && Server Is Also Running" })
-}
+
 
 export const createPost = async (req, res) => {
     try {

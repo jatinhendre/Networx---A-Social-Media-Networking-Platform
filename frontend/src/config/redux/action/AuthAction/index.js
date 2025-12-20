@@ -50,7 +50,7 @@ export const getAboutUser = createAsyncThunk(
     async (user, thunkAPI) => {
         try{
             console.log(user)
-            const response  =await clientServer.get("/get_user_profile",{
+            const response = await clientServer.get("/get_user_profile",{
                 params:{
                     token:user.token
                 }
@@ -78,7 +78,7 @@ export const sendConnectionRequest = createAsyncThunk(
     "user/sendConnectionRequest",
     async (user, thunkAPI) => {
         try{
-            const response  = await clientServer.post("/user/send_connection_request",{
+            const response  = await clientServer.post("/user/sendConnectionRequest",{
                token:user.token,
                connectionId:user.connectionId
             });
@@ -108,7 +108,7 @@ export const getConnectionRequests = createAsyncThunk(
         "user/getMyConnections",
         async (user, thunkAPI) => {     
             try{
-                const response  =await clientServer.get('/user/getMyConnections',{
+                const response = await clientServer.get('/user/getMyConnections',{
                    params:{
                     token:user.token
                    }

@@ -1,13 +1,24 @@
-import Navbar from '@/Components/Navbar'
-import React from 'react'
+import React, { useState } from 'react';
+import Navbar from '@/Components/Navbar';
+import Footer from '@/Components/Footer';
 
-function UserLayout({children}) {
+function UserLayout({ children }) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   return (
-    <div>
-    <Navbar />
-        {children}
-    </div>
-  )
+    <>
+      <Navbar setIsSidebarOpen={setIsSidebarOpen} />
+
+      {React.isValidElement(children)
+        ? React.cloneElement(children, {
+            isSidebarOpen,
+            setIsSidebarOpen,
+          })
+        : children}
+
+      <Footer />
+    </>
+  );
 }
 
-export default UserLayout
+export default UserLayout;

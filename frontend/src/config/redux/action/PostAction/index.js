@@ -122,3 +122,15 @@ export const postComment = createAsyncThunk(
         }
     }
 )
+
+export const postTestimonial = createAsyncThunk(
+    "post/postTestimonial",
+    async(data, thunkAPI)=>{
+        try{
+            const response = await clientServer.post("/add_testimonial",data);
+            return thunkAPI.fulfillWithValue(response.data);
+        }catch(err){
+            return thunkAPI.rejectWithValue(err.response.data);
+        }
+    }
+)

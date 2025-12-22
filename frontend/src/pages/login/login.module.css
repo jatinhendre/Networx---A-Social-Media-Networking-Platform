@@ -86,6 +86,9 @@
   transform: translateY(-1px);
 }
 
+.image{
+  height: 300px;
+}
 /* Right side panel */
 .card_container_right {
   flex: 0.45;
@@ -100,7 +103,7 @@
 /* Text inside right panel */
 .card_container_right p {
   color: #ffffff;
-  font-size: 0.98rem;
+  font-size: 1rem;
   margin-bottom: 10px;
 }
 
@@ -134,7 +137,9 @@
     min-height: auto;
     flex-direction: column;
   }
-
+  .image{
+    height: 200px;
+  }
   .card_container_left {
     padding: 24px 20px;
   }
@@ -156,7 +161,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 0.96rem;
+  font-size: 1rem;
   font-weight: 500;
   color: #ffffff;
   background-color: #ffffff;
@@ -176,3 +181,4 @@
   justify-content: center;
   align-items: center;
 }
+

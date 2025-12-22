@@ -89,7 +89,21 @@ export const sendConnectionRequest = createAsyncThunk(
     }
   }
 );
+// File: config/redux/action/AuthAction.js
 
+export const getConnectionStatus = createAsyncThunk(
+    "user/getConnectionStatus",
+    async ({ token, targetUserId }, thunkAPI) => {
+        try {
+            const response = await clientServer.get("/user/getConnectionStatus", {
+                params: { token, targetUserId }
+            });
+            return response.data; // { status: "none" | "connected" | "pending_sent" | "pending_received" }
+        } catch (err) {
+            return thunkAPI.rejectWithValue(err.response.data);
+        }
+    }
+);
 export const getConnectionRequests = createAsyncThunk(
   "user/getConnectionRequests",
   async (user, thunkAPI) => {

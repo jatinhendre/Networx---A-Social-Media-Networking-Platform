@@ -5,6 +5,7 @@ import {
   getComments,
   incrementLikes,
   postComment,
+  postTestimonial,
 } from "@/config/redux/action/PostAction";
 
 const initialState = {
@@ -13,8 +14,10 @@ const initialState = {
   postFetched: false,
   isLoading: false,
   loggedIn: false,
+  isSuccess:false,
   message: "",
   comments: [],
+
   postId: "",
 };
 
@@ -109,7 +112,16 @@ const postSlice = createSlice({
       .addCase(postComment.pending,(state,action)=>{
         state.isLoading=true;
       })
-      
+      .addCase(postTestimonial.pending,(state, action)=>{
+        state.isLoading = true;
+      })
+      .addCase(postTestimonial.fulfilled,(state, action)=>{
+        state.isLoading=false;
+        state.isSuccess = true;
+      })
+      .addCase(postTestimonial.rejected,(state, action)=>{
+        state.isLoading =false;
+      })
   }, 
 });
 

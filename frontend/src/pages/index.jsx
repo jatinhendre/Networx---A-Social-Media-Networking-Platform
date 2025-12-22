@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import UserLayout from "./layouts/UserLayout";
+import Testimonials from "@/Components/Testimonials";
 
 export default function Home() {
   const router = useRouter();
@@ -10,10 +11,7 @@ export default function Home() {
     <UserLayout>
       <section className={styles.heroWrapper}>
         <div className={styles.hero}>
-
-          {/* LEFT */}
           <div className={styles.heroLeft}>
-            <span className={styles.heroBadge}>🚀 New Social Experience</span>
 
             <h1 className={styles.heroTitle}>
               Connect with Friends <br />
@@ -21,8 +19,7 @@ export default function Home() {
             </h1>
 
             <p className={styles.heroSubtitle}>
-              A genuine social media platform focused on real stories,
-              real people, and meaningful connections — no bluffs, no noise.
+              Make Your Own Network and Get Connected with Your Friends and Family.
             </p>
 
             <div className={styles.heroActions}>
@@ -32,13 +29,6 @@ export default function Home() {
               >
                 Join Now
               </button>
-
-              <button
-                className={styles.secondaryButton}
-                onClick={() => router.push("/login")}
-              >
-                Learn More
-              </button>
             </div>
           </div>
 
@@ -46,7 +36,7 @@ export default function Home() {
           <div className={styles.heroRight}>
             <div className={styles.imageWrapper}>
               <Image
-                src="/images/image.png"
+                src='/images/hero_image.png'
                 alt="People connecting illustration"
                 fill
                 priority
@@ -54,9 +44,10 @@ export default function Home() {
               />
             </div>
           </div>
-
         </div>
       </section>
+      <Testimonials>
+      </Testimonials>
     </UserLayout>
   );
 }

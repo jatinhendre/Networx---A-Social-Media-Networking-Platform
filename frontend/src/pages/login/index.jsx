@@ -10,7 +10,7 @@ function Login() {
   const dispatch = useDispatch();
   const authState = useSelector((state) => state.auth);
 
-  const [LoginMethod, setLoginMethod] = useState(false); // false => Sign Up, true => Sign In
+  const [LoginMethod, setLoginMethod] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
@@ -25,26 +25,26 @@ function Login() {
   }, [authState.loggedIn, router]);
 
 
-  useEffect(()=>{
-    if(localStorage.getItem("token")){
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
       router.push('/dashboard');
     }
-  },[])
-useEffect(()=>{
-  dispatch(emptyMessage());
-},[LoginMethod,dispatch])
+  }, [])
+  useEffect(() => {
+    dispatch(emptyMessage());
+  }, [LoginMethod, dispatch])
 
   const handleRegister = () => {
     dispatch(registerUser({ username, password, name, email }));
-   
-  };
-  useEffect(()=>{
-    if(authState.message === "Registration Successful"){
-    setLoginMethod(true);
-   }
-  },[authState.message])
 
-  
+  };
+  useEffect(() => {
+    if (authState.message === "Registration Successful") {
+      setLoginMethod(true);
+    }
+  }, [authState.message])
+
+
   const handleAuth = () => {
     if (LoginMethod) {
       // Sign In mode
@@ -111,14 +111,16 @@ useEffect(()=>{
           </div>
 
           <div className={styles.card_container_right}>
-            {!LoginMethod ? <p>Already have an account?</p> : <p>New here?</p>}
+           <img className={styles.image} src="/images/login_logo.png" alt="logo" />
+
+            {!LoginMethod ? <p style={{fontSize:'1.5rem'}}>Already have an account?</p> : <p style={{fontSize:'1.5rem'}}>New here?</p>}
             <div
               className={styles.buttonFill}
               onClick={() => {
                 setLoginMethod(!LoginMethod);
-              }}  
+              }} 
             >
-              <p style={{color:'black'}}>{LoginMethod ? 'Sign Up' : 'Sign In'}</p>
+              <p style={{ color: 'black', fontSize:'1rem' }}>{LoginMethod ? 'Sign Up' : 'Sign In'}</p>
             </div>
           </div>
         </div>

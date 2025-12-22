@@ -5,6 +5,7 @@ import crypto from 'crypto';
 import fs from 'fs';
 import PDFDocument from 'pdfkit';
 import Connection from '../models/connections.model.js';
+import Testimonial from '../models/testimonials.model.js';
 
 const convertUserDataToPDF = async(userProfile)=>{
     const doc = new PDFDocument();
@@ -201,8 +202,14 @@ export const connectionRequest = async(req, res) => {
         });
         await request.save();
         
+        // Return the newly created connection with populated user data
+        const newConnection = await Connection.findById(request._id)
+            .populate('userId')
+            .populate('connectionId');
+        
         return res.status(200).json({
-            message: "Connection request sent successfully!"
+            message: "Connection request sent successfully",
+            connection: newConnection
         });
 
     } catch(err) {
@@ -300,5 +307,56 @@ export const acceptConnectionRequest = async(req, res) => {
         
     } catch(error) {
         return res.status(500).json({message: "Server error", error: error.message});
+    }
+}
+
+// File: controllers/userController.js
+
+export const getConnectionStatus = async (req, res) => {
+    try {
+        const { token, targetUserId } = req.query;
+        const user = await User.findOne({ token: token });
+        if (!user) return res.status(401).json({ message: "User not found" });
+
+        // Find any connection record involving both users
+        const connection = await Connection.findOne({
+            $or: [
+                { userId: user._id, connectionId: targetUserId },
+                { userId: targetUserId, connectionId: user._id }
+            ]
+        });
+
+        if (!connection) {
+            return res.status(200).json({ status: "none" });
+        }
+
+        if (connection.status_accepted === true) {
+            return res.status(200).json({ status: "connected" });
+        }
+
+        // If pending, check who sent it
+        if (connection.userId.toString() === user._id.toString()) {
+            return res.status(200).json({ status: "pending_sent" });
+        } else {
+            return res.status(200).json({ status: "pending_received" });
+        }
+    } catch (err) {
+        return res.status(500).json({ message: "Server error", error: err.message });
+    }
+};
+
+export const addTestimonial = async(req, res)=>{
+    try{
+        const { role, testimonial } = req.body;
+
+  const newTestimonial = await Testimonial.create({
+    userId: req.user._id,
+    role,
+    testimonial,
+  });
+
+  res.status(201).json(newTestimonial);
+    }catch(err){
+        return res.status(500).json({message:"server error"})
     }
 }

@@ -50,7 +50,6 @@ function PostCard({ post, showDelete = false }) {
     dispatch(getAllPosts());
   };
   
-  // Handle delete
   const handleDelete = async () => {
     if (!token) {
       alert("Please log in to delete posts");
@@ -117,7 +116,7 @@ function PostCard({ post, showDelete = false }) {
           alt={post.userId?.name}
           className={styles.avatar}
           onError={(e) => {
-            e.target.src = "/default-avatar.png";
+            e.target.src = `${BASE_URL}/default.jpg`;
           }}
         />
         <div className={styles.userInfo}>
@@ -253,7 +252,7 @@ function PostCard({ post, showDelete = false }) {
                   alt="user"
                   className={styles.commentAvatar}
                   onError={(e) => {
-                    e.target.src = "/default-avatar.png";
+                    e.target.src = `${BASE_URL}/default.jpg`;
                   }}
                 />
                 <div className={styles.commentContent}>

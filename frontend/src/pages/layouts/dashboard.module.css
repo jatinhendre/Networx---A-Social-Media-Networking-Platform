@@ -1,65 +1,73 @@
 .homeContainer {
   display: flex;
-  width: 100%;
-  min-height: 100vh;
-  background-color: #fafafa;
+  min-height: calc(100vh - 64px);
+  background: #fafafa;
 }
 
-/* Sidebar takes 20% space, feed takes rest */
-.homeContainer > div:nth-child(odd) {
-  flex: 0.22; 
-}
-
-.homeContainer > div:nth-child(even) {
-  flex: 0.78;
-}
-
-/* Sidebar Box */
 .homeContainer_left {
-  display: flex;
-  flex-direction: column;
-  gap: 1.4rem;
-  align-items: flex-start;
-  padding: 1rem 1.3rem;
+  flex: 0.22;
+  padding: 1rem;
   border-right: 1px solid #e6e6e6;
 }
 
-/* Each sidebar option row */
+.feedContainer {
+  flex: 0.56;
+  padding: 1rem;
+}
+
+.homeContainer_right {
+  flex: 0.22;
+  padding: 1rem;
+  border-left: 1px solid #e6e6e6;
+}
+
 .sideBarOptions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  font-size: 1.2rem;
+  padding: 0.6rem;
   cursor: pointer;
-  width: 100%;
-  padding: 0.6rem 0.8rem;
-  border-radius: 8px;
-  transition: background-color 0.18s ease, color 0.2s ease;
+  border-radius: 6px;
 }
 
-/* Icon appearance */
-.sideBarOptions > svg {
-  height: 1.6rem;
-  width: 1.6rem;
-  stroke: #444;
-}
-
-/* Hover Effect */
 .sideBarOptions:hover {
-  background: #f0f0ff;
-  color: #1f3bb2;
+  background: #eef2ff;
 }
 
-.sideBarOptions:hover svg {
-  stroke: #1f3bb2;
+.closeBtn {
+  display: none;
 }
 
-/* Active feel (Optional) */
-.sideBarOptionsActive {
-  background: #dbe4ff;
-  color: #2643d4;
-}
+/* ---------------- MOBILE ---------------- */
+@media (max-width: 768px) {
+  .homeContainer {
+    flex-direction: column;
+  }
 
-.sideBarOptionsActive svg {
-  stroke: #2643d4;
+  .homeContainer_left {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 260px;
+    height: 100vh;
+    background: white;
+    z-index: 3000;
+    transition: left 0.3s ease;
+  }
+
+  .sidebarOpen {
+    left: 0;
+  }
+
+  .closeBtn {
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  .homeContainer_right {
+    display: none;
+  }
+
+  .feedContainer {
+    flex: 1;
+    width: 100%;
+    padding: 0.8rem;
+  }
 }

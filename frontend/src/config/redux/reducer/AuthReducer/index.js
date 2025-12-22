@@ -7,6 +7,7 @@ import {
   getConnectionRequests,
   getMyConnections,
   acceptConnectionRequest,
+  sendConnectionRequest,
 } from "@/config/redux/action/AuthAction";
 
 const initialState = {
@@ -60,6 +61,7 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.isError = false;
         state.loggedIn = true;
+        state.token = localStorage.getItem('token');
         state.message = "Login Successful";
         state.isSuccess = true;
       })
@@ -156,7 +158,27 @@ const authSlice = createSlice({
         state.connections = [];
         state.isLoading = false;
       })
-
+      .addCase(sendConnectionRequest.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(sendConnectionRequest.fulfilled, (state, action) => {
+  state.isLoading = false;
+  state.message = "Connection request sent successfully";
+  state.isSuccess = true;
+  // Add the new pending connection to state immediately
+  if (action.payload && action.payload.connection) {
+    state.connections.push(action.payload.connection);
+  }
+})
+      .addCase(sendConnectionRequest.rejected, (state, action) => {
+        state.isLoading = false;
+        const payload = action.payload;
+        state.message =
+          (typeof payload === "string"
+            ? payload
+            : payload?.message) || "Failed to send connection request";
+        state.isError = true;
+      })
       // ACCEPT/REJECT CONNECTION REQUEST
       .addCase(acceptConnectionRequest.pending, (state) => {
         state.isLoading = true;

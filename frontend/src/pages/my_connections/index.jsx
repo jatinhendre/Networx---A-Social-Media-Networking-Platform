@@ -8,7 +8,9 @@ import {
   acceptConnectionRequest 
 } from "@/config/redux/action/AuthAction";
 import PostsFeed from "./PostsFeed";
-import styles from "./style.module.css"
+import styles from "./style.module.css";
+import { BASE_URL } from "@/config";
+
 function MyConnections() {
   const dispatch = useDispatch();
   const authState = useSelector((state) => state.auth);
@@ -17,17 +19,16 @@ function MyConnections() {
   const [token, setToken] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Get token from multiple sources
+  // 1. FIXED: Standardized token retrieval to match ViewProfile.js
   useEffect(() => {
-    let foundToken = authState.user?.token || 
-                     authState.token || 
-                     localStorage.getItem('userToken') || 
-                     sessionStorage.getItem('userToken');
+    const foundToken = localStorage.getItem('token') || 
+                       localStorage.getItem('userToken') || 
+                       authState.user?.token;
     
     if (foundToken) {
       setToken(foundToken);
     }
-  }, [authState.user, authState.token]);
+  }, [authState.user]);
 
   // Fetch connection data when token is available
   useEffect(() => {
@@ -37,12 +38,24 @@ function MyConnections() {
     }
   }, [token, dispatch]);
 
-  // Determine which user is the "other" person in a connection
+  // 2. FIXED: Robust helper to identify the "other" person in a connection
   const getOtherUser = (conn) => {
-    if (conn.userId?._id === authState.user?._id) {
-      return conn.connectionId;
-    }
-    return conn.userId;
+    if (!conn || !authState.user) return null;
+    const currentUserId = String(authState.user._id);
+    
+    // Check if the sender (userId) is the logged-in user
+    const senderId = String(conn.userId?._id || conn.userId);
+    
+    // If I am the sender, the 'other' person is the connectionId.
+    // Otherwise, the 'other' person is the userId (the person who sent it to me).
+    return senderId === currentUserId ? conn.connectionId : conn.userId;
+  };
+
+  // 3. FIXED: Helper to handle image paths consistently
+  const getAvatarUrl = (user) => {
+    if (!user?.profilePicture) return "/default-avatar.png";
+    if (user.profilePicture.startsWith('http')) return user.profilePicture;
+    return `${BASE_URL}/${user.profilePicture}`;
   };
 
   // Filter only accepted connections
@@ -50,37 +63,40 @@ function MyConnections() {
     (conn) => conn.status_accepted === true
   );
 
-  // Search filter function
-  const filterBySearch = (items, searchTerm) => {
+  // 4. FIXED: Search filter now correctly targets the 'other' user
+  const filterBySearch = (items, searchTerm, isRequestsTab) => {
     if (!searchTerm.trim()) return items;
     
     const lowerSearch = searchTerm.toLowerCase();
     return items.filter(item => {
-      const user = item.userId || getOtherUser(item);
+      // For requests tab, the person we care about is always 'userId'
+      // For connections tab, we need to find who the 'other' person is
+      const targetUser = isRequestsTab ? item.userId : getOtherUser(item);
       
       return (
-        user?.name?.toLowerCase().includes(lowerSearch) ||
-        user?.username?.toLowerCase().includes(lowerSearch) ||
-        user?.email?.toLowerCase().includes(lowerSearch)
+        targetUser?.name?.toLowerCase().includes(lowerSearch) ||
+        targetUser?.username?.toLowerCase().includes(lowerSearch) ||
+        targetUser?.email?.toLowerCase().includes(lowerSearch)
       );
     });
   };
 
-  // Apply search filter
+  // Apply search filter with context
   const filteredRequests = filterBySearch(
     authState.connectionRequests || [], 
-    searchQuery
+    searchQuery,
+    true
   );
   
   const filteredConnections = filterBySearch(
     acceptedConnections, 
-    searchQuery
+    searchQuery,
+    false
   );
 
   // Handle accept/reject connection request
   const handleConnectionAction = async (requestId, actionType) => {
     if (!token) return;
-    
     setProcessingRequest(requestId);
     
     try {
@@ -88,11 +104,11 @@ function MyConnections() {
         acceptConnectionRequest({
           token: token,
           requestId: requestId,
-          action_type: actionType,
+          action_type: actionType, // Ensure backend uses underscore
         })
       ).unwrap();
 
-      // Refresh both lists after successful action
+      // Refresh both lists
       dispatch(getConnectionRequests({ token }));
       dispatch(getMyConnections({ token }));
     } catch (error) {
@@ -102,7 +118,6 @@ function MyConnections() {
     }
   };
 
-  // Clear search when switching tabs
   const handleTabChange = (tab) => {
     setActiveTab(tab);
     setSearchQuery("");
@@ -118,17 +133,10 @@ function MyConnections() {
               <h3>Authentication Required</h3>
               <p>Please log in to view your connections.</p>
               <button
-                onClick={() => {
-                  const localToken = localStorage.getItem('userToken');
-                  if (localToken) {
-                    setToken(localToken);
-                  } else {
-                    window.location.href = '/login';
-                  }
-                }}
+                onClick={() => window.location.href = '/login'}
                 className={styles.retryButton}
               >
-                Retry / Go to Login
+                Go to Login
               </button>
             </div>
           </div>
@@ -162,66 +170,31 @@ function MyConnections() {
           {/* Search Bar */}
           <div className={styles.searchContainer}>
             <div className={styles.searchWrapper}>
-              <svg 
-                className={styles.searchIcon} 
-                width="20" 
-                height="20" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2"
-              >
+              <svg className={styles.searchIcon} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="11" cy="11" r="8"></circle>
                 <path d="m21 21-4.35-4.35"></path>
               </svg>
               <input
                 type="text"
-                placeholder={`Search ${activeTab === "requests" ? "requests" : "connections"} by name, username, or email...`}
+                placeholder={`Search ${activeTab === "requests" ? "requests" : "connections"}...`}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className={styles.searchInput}
               />
               {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className={styles.clearButton}
-                  aria-label="Clear search"
-                >
-                  ×
-                </button>
+                <button onClick={() => setSearchQuery("")} className={styles.clearButton}>×</button>
               )}
             </div>
-            {searchQuery && (
-              <div className={styles.searchResults}>
-                Showing {activeTab === "requests" ? filteredRequests.length : filteredConnections.length} of{" "}
-                {activeTab === "requests" ? (authState.connectionRequests?.length || 0) : acceptedConnections.length} results
-              </div>
-            )}
           </div>
 
           {/* Connection Requests Tab */}
           {activeTab === "requests" && (
             <div className={styles.tabContent}>
-              <h3 className={styles.sectionTitle}>Connection Requests</h3>
-              
+              <h3 className={styles.sectionTitle}>Pending Requests</h3>
               {authState.isLoading ? (
-                <p className={styles.loadingText}>Loading requests...</p>
+                <p className={styles.loadingText}>Loading...</p>
               ) : filteredRequests.length === 0 ? (
-                <div>
-                  <p className={styles.emptyState}>
-                    {searchQuery 
-                      ? `No requests found matching "${searchQuery}"`
-                      : "No pending connection requests"}
-                  </p>
-                  {!searchQuery && (
-                    <button 
-                      onClick={() => dispatch(getConnectionRequests({ token }))}
-                      className={styles.refreshButton}
-                    >
-                      Refresh Requests
-                    </button>
-                  )}
-                </div>
+                <p className={styles.emptyState}>No requests found.</p>
               ) : (
                 <div className={styles.requestsList}>
                   {filteredRequests.map((request) => {
@@ -230,14 +203,13 @@ function MyConnections() {
                       <div key={request._id} className={styles.requestCard}>
                         <div className={styles.userInfo}>
                           <img
-                            src={requester?.profilePicture || "/default-avatar.png"}
+                            src={getAvatarUrl(requester)}
                             alt={requester?.name}
                             className={styles.avatar}
                           />
                           <div>
                             <div className={styles.userName}>{requester?.name}</div>
                             <div className={styles.userUsername}>@{requester?.username}</div>
-                            <div className={styles.userEmail}>{requester?.email}</div>
                           </div>
                         </div>
 
@@ -247,14 +219,14 @@ function MyConnections() {
                             disabled={processingRequest === request._id}
                             className={styles.acceptButton}
                           >
-                            {processingRequest === request._id ? "Processing..." : "Accept"}
+                            {processingRequest === request._id ? "..." : "Accept"}
                           </button>
                           <button
                             onClick={() => handleConnectionAction(request._id, "reject")}
                             disabled={processingRequest === request._id}
                             className={styles.rejectButton}
                           >
-                            {processingRequest === request._id ? "Processing..." : "Reject"}
+                            Reject
                           </button>
                         </div>
                       </div>
@@ -268,13 +240,9 @@ function MyConnections() {
           {/* Accepted Connections Tab */}
           {activeTab === "connections" && (
             <div className={styles.tabContent}>
-              <h3 className={styles.sectionTitle}>My Connections</h3>
+              <h3 className={styles.sectionTitle}>Your Network</h3>
               {filteredConnections.length === 0 ? (
-                <p className={styles.emptyStpostate}>
-                  {searchQuery 
-                    ? `No connections found matching "${searchQuery}"`
-                    : "No connections yet. Start connecting with people!"}
-                </p>
+                <p className={styles.emptyState}>No connections found.</p>
               ) : (
                 <>
                   <div className={styles.connectionsGrid}>
@@ -283,20 +251,18 @@ function MyConnections() {
                       return (
                         <div key={conn._id} className={styles.connectionCard}>
                           <img
-                            src={otherUser?.profilePicture || "/default.jpg"}
+                            src={getAvatarUrl(otherUser)}
                             alt={otherUser?.name}
                             className={styles.avatar}
                           />
                           <div>
                             <div className={styles.userName}>{otherUser?.name}</div>
                             <div className={styles.userUsername}>@{otherUser?.username}</div>
-                            <div className={styles.userEmail}>{otherUser?.email}</div>
                           </div>
                         </div>
                       );
                     })}
                   </div>
-                  
                   <PostsFeed connections={acceptedConnections} />
                 </>
               )}

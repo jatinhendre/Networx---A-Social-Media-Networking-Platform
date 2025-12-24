@@ -20,7 +20,7 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:5000/get_user_profile?token=aaea1144f8c97b9157ffc1dcea12ceb73585f3caa9761acd8bfb23cc26ba0e6c HTTP/1.1
+GET http://localhost:5000/get_user_profile?token=b71cb7405d6b7aacc722a7cdec454e4562d128ff2ab898301057cfb764028dd7 HTTP/1.1
 Content-Type: application/json
 
 ###
@@ -49,4 +49,6 @@ Content-Type: application/json
 
 ###
 GET http://localhost:5000/user/getAllProfiles HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json]
+
+###

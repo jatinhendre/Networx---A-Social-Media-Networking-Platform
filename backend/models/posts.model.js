@@ -20,11 +20,16 @@ const postSchema = new mongoose.Schema({
         required: true,
     },
     likes:{
-        type: Number,
-        default: 0,
+        type: [Schema.Types.ObjectId],
+        ref:'User',
+        default:[]
     },
     media:{
         type: String,   
+        default:''
+    },
+    mediaPublicId:{
+        type:String,
         default:''
     },
     filetype:{

@@ -6,6 +6,7 @@ import {
   incrementLikes,
   postComment,
   postTestimonial,
+  toggleLike,
 } from "@/config/redux/action/PostAction";
 
 const initialState = {
@@ -73,13 +74,14 @@ const postSlice = createSlice({
             : action.payload?.message) || "Delete failed";
       })
 
-      .addCase(incrementLikes.fulfilled, (state, action) => {
-        const { postId, likes } = action.payload;
-        state.posts = state.posts.map((post) =>
-          post._id === postId ? { ...post, likes } : post
-        );
-      })
+      .addCase(toggleLike.fulfilled, (state, action) => {
+  const { postId, likes } = action.payload;
 
+  const post = state.posts.find((p) => p._id === postId);
+  if (post) {
+    post.likes = likes; 
+  }
+})
       .addCase(getComments.pending, (state) => {
         state.isLoading = true;
       })

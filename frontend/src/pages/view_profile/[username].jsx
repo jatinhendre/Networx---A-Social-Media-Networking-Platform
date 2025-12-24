@@ -10,6 +10,7 @@ import {
   getAboutUser,
   getConnectionStatus,
 } from "@/config/redux/action/AuthAction";
+import Image from "next/image";
 
 function ViewProfile({ username, profile }) {
   const router = useRouter();
@@ -19,7 +20,6 @@ function ViewProfile({ username, profile }) {
   const postState = useSelector((state) => state.post);
 
   const [connectionStatus, setConnectionStatus] = useState("none");
-  const [userPosts, setUserPosts] = useState([]);
 
   // Check if this profile belongs to the logged-in user
   const isMyProfile = authState.user?._id === profile?.userId?._id;
@@ -47,12 +47,12 @@ function ViewProfile({ username, profile }) {
     fetchStatus();
   }, [dispatch, profile?.userId?._id, isMyProfile]);
 
-  useEffect(() => {
-    const posts = postState.posts.filter(
-      (post) => post.userId.username === router.query.username
-    );
-    setUserPosts(posts);
-  }, [postState.posts, router.query.username]);
+  const userPosts = React.useMemo(() => {
+  return postState.posts.filter(
+    (post) => post.userId.username === router.query.username
+  );
+}, [postState.posts, router.query.username]);
+
 
   const handleConnect = async () => {
     try {
@@ -85,10 +85,17 @@ function ViewProfile({ username, profile }) {
       <DashboardLayout>
         <div className={styles.container}>
           <div className={styles.header}>
-            <img
-              src={`${BASE_URL}/${userId.profilePicture}`}
+            <Image
+              src={
+              userId?.profilePicture &&
+    userId.profilePicture !== ""
+      ? userId.profilePicture
+      : "/default.jpg"
+              }
               alt="Profile"
               className={styles.avatar}
+              width={40}
+              height={40}
             />
 
             <div className={styles.headerInfo}>
@@ -102,7 +109,7 @@ function ViewProfile({ username, profile }) {
               {isMyProfile ? (
                 <button 
                   className={styles.editBtn} 
-                  onClick={() => router.push("/manager/edit_profile")}
+                  onClick={() => router.push("/edit_profile")}
                 >
                   Edit Profile
                 </button>
@@ -120,7 +127,7 @@ function ViewProfile({ username, profile }) {
                   {connectionStatus === "pending_received" && (
                     <button
                       className={styles.connectBtn}
-                      onClick={() => router.push("/manager/connection_request")}
+                      onClick={() => router.push("/my_connections")}
                     >
                       Review Request
                     </button>
@@ -135,6 +142,12 @@ function ViewProfile({ username, profile }) {
               )}
             </div>
           </div>
+{bio && (
+  <div className={styles.section}>
+    <h3>Bio</h3>
+    <p>{bio}</p>
+  </div>
+)}
 
           <div className={styles.section}>
             <h3>Currently Working On</h3>
@@ -142,13 +155,36 @@ function ViewProfile({ username, profile }) {
           </div>
 
           <div className={styles.section}>
-            <h3>Education</h3>
-            {education.length > 0 ? (
-              education.map((edu, i) => <p key={i}>• {edu}</p>)
-            ) : (
-              <p className={styles.empty}>No education added</p>
-            )}
-          </div>
+  <h3>Education</h3>
+
+  {education && education.length > 0 ? (
+    education.map((edu) => (
+      <div key={edu._id} className={styles.educationCard}>
+        <p><strong>School:</strong> {edu.school || "—"}</p>
+        <p><strong>Degree:</strong> {edu.degree || "—"}</p>
+        <p><strong>Field:</strong> {edu.fieldOfStudy || "—"}</p>
+      </div>
+    ))
+  ) : (
+    <p className={styles.empty}>No education added</p>
+  )}
+</div>
+
+<div className={styles.section}>
+  <h3>Work Experience</h3>
+
+  {pastWork && pastWork.length > 0 ? (
+    pastWork.map((work) => (
+      <div key={work._id} className={styles.workCard}>
+        <p><strong>Company:</strong> {work.company || "—"}</p>
+        <p><strong>Position:</strong> {work.position || "—"}</p>
+        <p><strong>Years:</strong> {work.years || "—"}</p>
+      </div>
+    ))
+  ) : (
+    <p className={styles.empty}>No work experience added</p>
+  )}
+</div>
 
           <div className={styles.section}>
             <h3>Recent Activity</h3>
@@ -156,10 +192,12 @@ function ViewProfile({ username, profile }) {
               userPosts.map((post) => (
                 <div key={post._id} className={styles.activityCard}>
                   {post.media && (
-                    <img
-                      src={`${BASE_URL}/${post.media}`}
+                    <Image
+                      src={post.media}
                       alt="post media"
                       className={styles.activityImage}
+                      width={40}
+                    height={40}
                     />
                   )}
                   <div className={styles.activityContent}>

@@ -6,6 +6,8 @@ import fs from 'fs';
 import PDFDocument from 'pdfkit';
 import Connection from '../models/connections.model.js';
 import Testimonial from '../models/testimonials.model.js';
+import cloudinary from "../config/cloudinary.js";
+
 
 const convertUserDataToPDF = async(userProfile)=>{
     const doc = new PDFDocument();
@@ -76,34 +78,54 @@ export const updateProfilePicture = async (req, res) => {
     try {
         const user = await User.findOne({ token: token });
         if (!user) return res.status(401).json({ message: "Unauthorized" });
-        user.profilePicture = req.file.filename;
+        if (user.profilePicturePublicId) {
+      await cloudinary.uploader.destroy(user.profilePicturePublicId);
+    }
+    user.profilePicture = req.file.path;         
+    user.profilePicturePublicId = req.file.filename; 
         await user.save();
-        return res.status(200).json({ message: "Profile picture updated successfully" });
+        return res.status(200).json({ message: "Profile picture updated successfully" ,profilePicture:user.profilePicture});
     } catch (error) {
         return res.status(500).json({ message: "Server error", error: error.message });
     }
 }
 
-export const updateUser = async(req, res)=>{
-    try{
-        let {token, ...newUserData}  = req.body;
+export const updateUser = async (req, res) => {
+  try {
+    const { token, name, username } = req.body;
 
-        let user = await User.findOne({token:token});
-        if(!user) return res.status(401).json({message:"Unauthorized"});
-        const {username, email} = newUserData;
-        const existingUser = await User.findOne({$or:[{username:username}, {email:email}]});
-        if(existingUser){
-        if(existingUser._id.toString() !== user._id.toString()){
-            return res.status(400).json({message:"Username or email already taken"});
-            }
-        }
-    Object.assign(user, newUserData);
-    await user.save();
-    return res.status(200).json({message:"Profile updated successfully"});
-    }catch(error){
-        return res.status(500).json({message:"Server error", error:error.message});
+    const user = await User.findOne({ token });
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized" });
     }
-}
+
+    // 🔒 Username uniqueness check ONLY
+    if (username) {
+      const existingUser = await User.findOne({ username });
+      if (
+        existingUser &&
+        existingUser._id.toString() !== user._id.toString()
+      ) {
+        return res.status(400).json({ message: "Username already taken" });
+      }
+    }
+
+    // ✅ Only allow safe fields
+    if (name !== undefined) user.name = name;
+    if (username !== undefined) user.username = username;
+
+    await user.save();
+
+    return res
+      .status(200)
+      .json({ message: "Profile updated successfully" });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+};
+
 
 export const getProfile = async(req, res)=>{
     try{

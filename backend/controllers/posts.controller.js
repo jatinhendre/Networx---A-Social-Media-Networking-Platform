@@ -1,28 +1,55 @@
 import Post from "../models/posts.model.js";
 import User from "../models/users.model.js";
 import Comment from "../models/comments.model.js";
+import cloudinary from "../config/cloudinary.js";
 
 
 
 export const createPost = async (req, res) => {
     try {
-        const { token } = req.body;
+        console.log("📝 CREATE POST REQUEST");
+        console.log("Body:", req.body);
+        console.log("File:", req.file);
+        console.log("Content-Type:", req.headers["content-type"]);
+
+        const { token, body } = req.body;
+        
+        if (!token) {
+            return res.status(401).json({ message: "Token required" });
+        }
+
         const user = await User.findOne({ token: token });
         if (!user) {
             return res.status(401).json({ message: "User not found!!" });
         }
+
+        if (!body || body.trim() === "") {
+            return res.status(400).json({ message: "Post body cannot be empty" });
+        }
+
         const post = new Post({
             userId: user._id,
-            body: req.body.body,
-            media: req.file ? req.file.filename : '',
-            filetype: req.file ? req.file.mimetype.split('/')[1] : '',
-        })
+            body: body,
+            media: req.file ? req.file.path : '',
+            filetype: req.file ? req.file.mimetype : '',
+            mediaPublicId: req.file ? req.file.filename : ''
+        });
+
         await post.save();
-        return res.status(201).json({ message: "Post created successfully", post: post });
+        
+        console.log("✅ Post created successfully:", post._id);
+        return res.status(201).json({ 
+            message: "Post created successfully", 
+            post: post 
+        });
     } catch (err) {
-        return res.status(500).json({ message: "Server error", error: err.message });
+        console.error("❌ CREATE POST ERROR:", err);
+        return res.status(500).json({ 
+            message: "Server error", 
+            error: err.message 
+        });
     }
-}
+};
 
 export const getAllPosts = async (req, res) => {
     try{
@@ -33,23 +60,47 @@ export const getAllPosts = async (req, res) => {
     }
 }
 
-export const deletePost = async(req, res) => {
-    try{
-        const { postId, token } = req.body;
-        const user = await User.findOne({ token: token });
-        if (!user) {
-            return res.status(401).json({ message: "User not found!!" });
-        }
-        const deleted = await Post.findOneAndDelete({ _id: postId, userId: user._id });
-if (!deleted) {
-  return res.status(404).json({ message: "Post not found or you are not authorized to delete this post." });
-}
-return res.status(200).json({ message: "Post deleted successfully", postId });
-    }catch(err){
-        return res.status(500).json({ message: "Server error", error: err.message });       
+export const deletePost = async (req, res) => {
+  try {
+    const { postId, token } = req.body;
+
+    const user = await User.findOne({ token });
+    if (!user) {
+      return res.status(401).json({ message: "User not found!!" });
     }
-      
-}
+
+    const post = await Post.findOne({ _id: postId, userId: user._id });
+    if (!post) {
+      return res.status(404).json({
+        message: "Post not found or you are not authorized to delete this post."
+      });
+    }
+
+    if (post.mediaPublicId) {
+      await cloudinary.uploader.destroy(post.mediaPublicId);
+    }
+
+    const deleted = await Post.findByIdAndDelete(postId);
+
+    if (!deleted) {
+      return res.status(404).json({
+        message: "Post was not found"
+      });
+    }
+
+    return res.status(200).json({
+      message: "Post deleted successfully",
+      postId
+    });
+
+  } catch (err) {
+    return res.status(500).json({
+      message: "Server error",
+      error: err.message
+    });
+  }
+};
+
 
 export const postComment = async(req, res) => {
     try{
@@ -75,10 +126,9 @@ export const postComment = async(req, res) => {
     }
 }
 
-
 export const getComments = async(req, res) => {
     try{
-        const { postId } = req.query.postId;
+        const { postId } = req.query;
         const post = await Post.findOne({ _id: postId });
         if (!post) {
             return res.status(404).json({ message: "Post not found." });
@@ -107,17 +157,50 @@ export const delete_comment = async(req, res) => {
     }
 }
 
-export const incrementLike = async(req, res) => {
-    try{
-        const { postId } = req.body;
-        const post = await Post.findOne({ _id: postId });   
-        if (!post) {
-            return res.status(404).json({ message: "Post not found." });
-        }
-        post.likes += 1;
-        await post.save();
-        return res.status(200).json({ message: "Post liked successfully", likes: post.likes });
-    }catch(err){
-        return res.status(500).json({ message: "Server error", error: err.message });       
+export const toggleLike = async (req, res) => {
+  try {
+    const { postId, token } = req.body;
+
+    const user = await User.findOne({ token });
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized" });
     }
-}
+
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    // 🔥 SAFETY GUARD
+    if (!Array.isArray(post.likes)) {
+      post.likes = [];
+    }
+
+    const alreadyLiked = post.likes.some(
+      (id) => id.toString() === user._id.toString()
+    );
+
+    if (alreadyLiked) {
+      // UNLIKE
+      post.likes = post.likes.filter(
+        (id) => id.toString() !== user._id.toString()
+      );
+    } else {
+      // LIKE
+      post.likes.push(user._id);
+    }
+
+    await post.save();
+
+    return res.status(200).json({
+      postId: post._id,
+      likes: post.likes,
+      liked: !alreadyLiked,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      message: "Server error",
+      error: err.message,
+    });
+  }
+};

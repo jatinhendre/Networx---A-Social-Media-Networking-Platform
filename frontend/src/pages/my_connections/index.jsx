@@ -10,6 +10,7 @@ import {
 import PostsFeed from "./PostsFeed";
 import styles from "./style.module.css";
 import { BASE_URL } from "@/config";
+import Image from "next/image";
 
 function MyConnections() {
   const dispatch = useDispatch();
@@ -202,10 +203,12 @@ function MyConnections() {
                     return (
                       <div key={request._id} className={styles.requestCard}>
                         <div className={styles.userInfo}>
-                          <img
+                          <Image
                             src={getAvatarUrl(requester)}
                             alt={requester?.name}
                             className={styles.avatar}
+                            width={40}
+                            height={40}
                           />
                           <div>
                             <div className={styles.userName}>{requester?.name}</div>
@@ -250,10 +253,12 @@ function MyConnections() {
                       const otherUser = getOtherUser(conn);
                       return (
                         <div key={conn._id} className={styles.connectionCard}>
-                          <img
+                          <Image
                             src={getAvatarUrl(otherUser)}
                             alt={otherUser?.name}
                             className={styles.avatar}
+                            width={40}
+                            height={40}
                           />
                           <div>
                             <div className={styles.userName}>{otherUser?.name}</div>

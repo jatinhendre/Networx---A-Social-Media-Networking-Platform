@@ -5,17 +5,18 @@ import multer from 'multer';
 import {updateProfilePicture} from '../controllers/user.controller.js';
 import { getProfile ,updateProfileData} from '../controllers/user.controller.js';
 const router = Router();
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+import cloudinary from "../config/cloudinary.js";
 
-const storage = multer.diskStorage({
-    filename: (req, file, cb)=>{
-        cb(null, Date.now() + '-' + file.originalname);
-    },
-    destination: (req, file, cb)=>{
-        cb(null, 'uploads/');
-    }
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "networx/posts",
+    allowed_formats: ["jpg", "jpeg", "png", "webp"],
+  },
 });
 
-const upload = multer({storage:storage});
+const upload = multer({ storage });
 
 
 router.route('/update_profile_picture').post(upload.single('profile_picture'), updateProfilePicture);

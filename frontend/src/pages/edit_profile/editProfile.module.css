@@ -1,0 +1,106 @@
+/* Page container */
+.container {
+  max-width: 760px;
+  margin: 30px auto;
+  padding: 0 16px;
+}
+
+/* Main white card */
+.cardWrapper {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+/* Profile header */
+.profileHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+/* Profile image */
+.avatar {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #e5e7eb;
+  margin-bottom: 12px;
+}
+
+/* Hide ugly file input */
+.fileInput {
+  margin: 10px 0;
+}
+
+/* Section styling */
+.form {
+  margin-bottom: 28px;
+}
+
+.form h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #111827;
+}
+
+/* Inputs */
+.form input,
+.form textarea {
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+}
+
+.form textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+/* Education / Work cards */
+.card {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+/* Buttons */
+.secondaryBtn {
+  background: #e5e7eb;
+  color: #111827;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.secondaryBtn:hover {
+  background: #d1d5db;
+}
+
+.saveBtn {
+  background: #0a66c2;
+  color: #ffffff;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  width: 100%;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 16px;
+}
+
+.saveBtn:hover {
+  background: #004182;
+}

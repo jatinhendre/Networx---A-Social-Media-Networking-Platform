@@ -6,6 +6,7 @@ import { getAllUsers } from "@/config/redux/action/AuthAction";
 import styles from "./index.module.css";
 import { BASE_URL } from "@/config";
 import { Router, useRouter } from "next/router";
+import Image from "next/image";
 
 function Discover() {
   const authState = useSelector((state) => state.auth);
@@ -45,10 +46,17 @@ function Discover() {
             {authState.allUsers?.length > 0 ? (
               filteredUsers.map((profile) => (
                 <div key={profile._id} className={styles.card}>
-                  <img
-                    src={`${BASE_URL}/${profile.userId.profilePicture || ""}`}
+                  <Image
+                    src={
+                       profile.userId?.profilePicture &&
+    profile.userId.profilePicture !== ""
+      ? profile.userId.profilePicture
+      : "/default.jpg"
+                    }
                     alt="profile"
                     className={styles.avatar}
+                    width={40}
+                    height={40}
                   />
 
                   <h3 className={styles.username}>

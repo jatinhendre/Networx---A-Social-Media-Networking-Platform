@@ -17,33 +17,26 @@ export const getAllPosts = createAsyncThunk(
 )
 
 export const createPost = createAsyncThunk(
-    "post/createPost",
-    async (postData, thunkAPI) => {
-        
-        try {
-            const {media, body} = postData;
-            const formData = new FormData();
-            formData.append("media", media);
-            formData.append("body", body);
-            formData.append("token", postData.token);
-
-            const response = await clientServer.post("/create_post", formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
-            if(response.status === 200){
-                return thunkAPI.fulfillWithValue(response.data);
-            }else{
-                return thunkAPI.rejectWithValue("Post creation failed");
-            }
-        }catch(err) {
-    console.log("🔥 ERROR RESPONSE:", err.response);
-    console.log("🔥 ERROR MESSAGE:", err.message);
-    return thunkAPI.rejectWithValue(err.response?.data || err.message);
-}
+  "post/createPost",
+  async (formData, thunkAPI) => {
+    try {
+      const res = await clientServer.post(
+        "/create_post",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return res.data.post;
+    } catch (err) {
+      console.error("Error:", err.response?.data || err.message);
+      return thunkAPI.rejectWithValue(err.response?.data);
     }
-)
+  }
+);
+
 
 export const deletePost = createAsyncThunk(
     "post/deletePost",
@@ -65,25 +58,31 @@ export const deletePost = createAsyncThunk(
     }
 )
 
-export const incrementLikes = createAsyncThunk(
-    "post/incrementLikes",
-    async (user, thunkAPI) => {
-        try{
-            const {postId, token} = user;
-            const response = await clientServer.post("/incrementLikes", {
-                postId,
-                token
-            });
-            if(response.status === 200){
-                return thunkAPI.fulfillWithValue(response.data);
-            }else{
-                return thunkAPI.rejectWithValue("Increment Likes failed");
-            }
-        }catch(err){
-            return thunkAPI.rejectWithValue(err.response.data);
-        }
+export const toggleLike = createAsyncThunk(
+  "post/toggleLike",
+  async ({ postId, token }, thunkAPI) => {
+    try {
+      const response = await clientServer.post("/toggle_Like", {
+        postId,
+        token,
+      });
+
+      if (response.status === 200) {
+        return thunkAPI.fulfillWithValue({
+          postId,
+          likes: response.data.likes, // array of userIds
+        });
+      } else {
+        return thunkAPI.rejectWithValue("Toggle like failed");
+      }
+    } catch (err) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data || "Toggle like error"
+      );
     }
-)
+  }
+);
+
 
 
 export const getComments = createAsyncThunk(

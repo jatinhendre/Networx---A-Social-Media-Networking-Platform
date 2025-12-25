@@ -27,6 +27,8 @@ export const registerUser = createAsyncThunk(
     "user/register",
     async (userAgent, thunkAPI) => {
         try{
+          console.log("BASE URL 👉", clientServer.defaults.baseURL);
+
             const response  =await clientServer.post("/register",{
                 email:userAgent.email,
                 password:userAgent.password,
@@ -66,6 +68,7 @@ export const getAllUsers = createAsyncThunk(
     "user/getAllUsers",
     async (_, thunkAPI) => {
         try{
+          
             const response  =await clientServer.get("/user/getAllProfiles");
             return thunkAPI.fulfillWithValue(response.data);
         }catch(err){

@@ -10,13 +10,15 @@ import userRoutes from './routes/users.routes.js'
 const app = express()
 
 
-app.use(cors({
-  origin: [
-    "http://localhost:3000",
-    "https://networx-a-social-media-networking-p-ebon.vercel.app"
-  ],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: [
+      "https://networx-kappa.vercel.app",
+      "http://localhost:3000"
+    ],
+    credentials: true,
+  })
+);
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static('uploads'))

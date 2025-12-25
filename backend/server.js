@@ -13,7 +13,7 @@ const app = express()
 app.use(
   cors({
     origin: [
-      "https://networx-a-social-media-networking-p.vercel.app/",
+      "https://networx-a-social-media-networking-p.vercel.app",
       "http://localhost:3000"
     ],
     credentials: true,

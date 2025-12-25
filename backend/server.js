@@ -14,7 +14,7 @@ import cors from "cors";
 app.use(cors({
   origin: [
     "http://localhost:3000",
-    "https://networx-a-social-media-networking.onrender.com"
+    "https://networx-a-social-media-networking-p-ebon.vercel.app"
   ],
   credentials: true
 }));

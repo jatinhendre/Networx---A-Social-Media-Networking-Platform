@@ -1,7 +1,5 @@
-const { default: axios } = require("axios");
+import axios from "axios";
 
-export const BASE_URL = "http://localhost:5000";
-
-export const clientServer  = axios.create({
-    baseURL: BASE_URL,
+export const clientServer = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
 });

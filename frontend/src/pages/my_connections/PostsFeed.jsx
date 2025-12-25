@@ -12,8 +12,9 @@ import Image from "next/image";
 
 function PostsFeed({ connections }) {
   const dispatch = useDispatch();
-  const postState = useSelector((state) => state.post);
-  const authState = useSelector((state) => state.auth);
+  const postState = useSelector((state) => state.post) || {};
+const authState = useSelector((state) => state.auth) || {};
+
 
   const [commentContent, setCommentContent] = useState("");
   const [openCommentSection, setOpenCommentSection] = useState(null);
@@ -32,23 +33,19 @@ function PostsFeed({ connections }) {
   }, [dispatch]);
 
   /* ---------------- CONNECTION FILTER ---------------- */
-  const connectionIds = connections.map((conn) =>
+  const safeConnections = connections || [];
+
+  const connectionIds = safeConnections.map((conn) =>
     conn.userId._id === currentUserId
       ? conn.connectionId._id
       : conn.userId._id
   );
   
+  const safePosts = postState.posts || [];
 
-  const filteredPosts = postState.posts.filter((post) =>
+  const filteredPosts = safePosts.filter((post) =>
     connectionIds.includes(post.userId._id)
   );
-filteredPosts.forEach((post) => {
-  console.log(
-    post.userId.username,
-    "=>",
-    post.userId.profilePicture
-  );
-});
   /* ---------------- HANDLERS ---------------- */
   const handleLike = (postId) => {
     if (!token) {
@@ -77,7 +74,7 @@ filteredPosts.forEach((post) => {
         </p>
       ) : (
         <div className={styles.postsGrid}>
-          {filteredPosts.map((post) => {
+          {filteredPosts?.map((post) => {
             const isLiked =
               Array.isArray(post.likes) &&
               currentUserId &&

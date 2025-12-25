@@ -11,8 +11,10 @@ import PostsFeed from "./PostsFeed";
 import styles from "./style.module.css";
 import { BASE_URL } from "@/config";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 function MyConnections() {
+  const router = useRouter();
   const dispatch = useDispatch();
   const authState = useSelector((state) => state.auth);
   const [activeTab, setActiveTab] = useState("connections");
@@ -53,11 +55,11 @@ function MyConnections() {
   };
 
   // 3. FIXED: Helper to handle image paths consistently
-  const getAvatarUrl = (user) => {
-    if (!user?.profilePicture) return "/default-avatar.png";
-    if (user.profilePicture.startsWith('http')) return user.profilePicture;
-    return `${BASE_URL}/${user.profilePicture}`;
-  };
+ const getAvatarUrl = (user) => {
+  return user?.profilePicture && user.profilePicture !== ""
+    ? user.profilePicture
+    : "/default.jpg";
+};
 
   // Filter only accepted connections
   const acceptedConnections = (authState.connections || []).filter(
@@ -252,7 +254,9 @@ function MyConnections() {
                     {filteredConnections.map((conn) => {
                       const otherUser = getOtherUser(conn);
                       return (
-                        <div key={conn._id} className={styles.connectionCard}>
+                        <div style={{cursor:'pointer'}} onClick={()=>{
+                          router.push('/view_profile/' + otherUser?.username)
+                        }} key={conn._id} className={styles.connectionCard}>
                           <Image
                             src={getAvatarUrl(otherUser)}
                             alt={otherUser?.name}

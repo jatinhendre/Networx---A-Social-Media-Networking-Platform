@@ -105,11 +105,42 @@ function DashboardLayout({ children, isSidebarOpen, setIsSidebarOpen }) {
 
       {/* RIGHT PANEL */}
       <div className={styles.homeContainer_right}>
-        <h3>Top Profiles</h3>
-        {authState.allUsers?.map((user) => (
-          <div key={user._id}>{user.userId.name}</div>
-        ))}
-      </div>
+  <h3>Recent Profiles</h3>
+
+  <div className={styles.recentProfiles}>
+    {authState.allUsers?.map((user) => {
+      const profile = user.userId; // assuming same structure
+
+      return (
+        <div
+          key={profile._id}
+          className={styles.profileCard}
+          onClick={() =>
+            router.push(`/view_profile/${profile.username}`)
+          }
+        >
+          <img
+            src={
+              profile.profilePicture && profile.profilePicture !== ""
+                ? profile.profilePicture
+                : "/default.jpg"
+            }
+            alt={profile.name}
+            className={styles.profileAvatar}
+          />
+
+          <div className={styles.profileInfo}>
+            <div className={styles.profileName}>{profile.name}</div>
+            <div className={styles.profileUsername}>
+              @{profile.username}
+            </div>
+          </div>
+        </div>
+      );
+    })}
+  </div>
+</div>
+
     </div>
   );
 }

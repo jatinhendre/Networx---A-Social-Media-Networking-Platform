@@ -1,12 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { 
-  getAllPosts, 
+import {
+  getAllPosts,
   toggleLike,
-  deletePost 
+  deletePost,
+  getComments,
+  postComment,
 } from "@/config/redux/action/PostAction";
 import styles from "./PostsFeed.module.css";
-import { BASE_URL } from "@/config";
 import Image from "next/image";
 
 function PostsFeed({ connections }) {
@@ -14,9 +15,10 @@ function PostsFeed({ connections }) {
   const postState = useSelector((state) => state.post);
   const authState = useSelector((state) => state.auth);
 
-  const token =
-    authState.user?.token || localStorage.getItem("token");
+  const [commentContent, setCommentContent] = useState("");
+  const [openCommentSection, setOpenCommentSection] = useState(null);
 
+  const token = authState.user?.token || localStorage.getItem("token");
   const currentUserId = authState.user?._id;
 
   /* ---------------- FETCH POSTS ---------------- */
@@ -25,18 +27,23 @@ function PostsFeed({ connections }) {
   }, [dispatch]);
 
   /* ---------------- CONNECTION FILTER ---------------- */
-  const connectionIds = connections.map((conn) => {
-    if (conn.userId._id === currentUserId) {
-      return conn.connectionId._id;
-    }
-    return conn.userId._id;
-  });
-
-  const filteredPosts = postState.posts.filter(
-    (post) =>
-      connectionIds.includes(post.userId._id) 
+  const connectionIds = connections.map((conn) =>
+    conn.userId._id === currentUserId
+      ? conn.connectionId._id
+      : conn.userId._id
   );
+  
 
+  const filteredPosts = postState.posts.filter((post) =>
+    connectionIds.includes(post.userId._id)
+  );
+filteredPosts.forEach((post) => {
+  console.log(
+    post.userId.username,
+    "=>",
+    post.userId.profilePicture
+  );
+});
   /* ---------------- HANDLERS ---------------- */
   const handleLike = (postId) => {
     if (!token) {
@@ -55,7 +62,8 @@ function PostsFeed({ connections }) {
   return (
     <div className={styles.feedContainer}>
       <h3>Posts from Connections</h3>
-      <br></br>
+      <br />
+
       {postState.isLoading ? (
         <p>Loading posts...</p>
       ) : filteredPosts.length === 0 ? (
@@ -65,26 +73,25 @@ function PostsFeed({ connections }) {
       ) : (
         <div className={styles.postsGrid}>
           {filteredPosts.map((post) => {
-            // ✅ CORRECT PLACE FOR isLiked
             const isLiked =
               Array.isArray(post.likes) &&
               currentUserId &&
               post.likes.some(
                 (id) => id.toString() === currentUserId.toString()
               );
-
+              console.log("post-->",post);
             return (
+              
               <div key={post._id} className={styles.postCard}>
                 {/* HEADER */}
                 <div className={styles.postHeader}>
                   <Image
                     src={
-                       post.userId?.profilePicture &&
-    post.userId.profilePicture !== ""
-      ? post.userId.profilePicture
-      : "/default.jpg"
+                      post.userId?.profilePicture
+                        ? post.userId.profilePicture
+                        : "/default.jpg"
                     }
-                    alt={post.userId.name}
+                    alt="avatar"
                     width={40}
                     height={40}
                     className={styles.avatar}
@@ -117,31 +124,37 @@ function PostsFeed({ connections }) {
                   <Image
                     src={post.media}
                     alt="Post media"
-                    width={40}
-                    height={40}
+                    width={600}
+                    height={400}
                     className={styles.postImage}
                   />
                 )}
 
                 {/* ACTIONS */}
                 <div className={styles.postActions}>
-                  {/* LIKE TOGGLE */}
                   <button
-  onClick={() => handleLike(post._id)}
-  className={`${styles.likeButton} ${
-    isLiked ? styles.likedButton : ""
-  }`}
->
-  {isLiked ? "❤️" : "🤍"} {post.likes?.length || 0}
-</button>
+                    onClick={() => handleLike(post._id)}
+                    className={`${styles.likeButton} ${
+                      isLiked ? styles.likedButton : ""
+                    }`}
+                  >
+                    {isLiked ? "❤️" : "🤍"} {post.likes?.length || 0}
+                  </button>
 
-
-                  {/* COMMENT */}
-                  <button className={styles.commentButton}>
+                  <button
+                    className={styles.commentButton}
+                    onClick={() => {
+                      if (openCommentSection === post._id) {
+                        setOpenCommentSection(null);
+                      } else {
+                        setOpenCommentSection(post._id);
+                        dispatch(getComments({ postId: post._id }));
+                      }
+                    }}
+                  >
                     💬 Comment
                   </button>
 
-                  {/* SHARE (INTACT) */}
                   <button
                     className={styles.shareButton}
                     onClick={() => {
@@ -153,9 +166,69 @@ function PostsFeed({ connections }) {
                       );
                     }}
                   >
-                    🔗Share
+                    🔗 Share
                   </button>
                 </div>
+
+                {/* COMMENTS (Dashboard-style) */}
+                {openCommentSection === post._id && (
+                  <div className={styles.commentSection}>
+                    {postState.comments?.length > 0 ? (
+                      postState.comments.map((comment) => (
+                        <div
+                          key={comment._id}
+                          className={styles.singleComment}
+                        >
+                          <Image
+                            src={
+                              comment.userId?.profilePicture
+                                ? comment.userId.profilePicture
+                                : "/default.jpg"
+                            }
+                            alt="user"
+                            width={32}
+                            height={32}
+                          />
+                          <div>
+                            <p className={styles.commentUsername}>
+                              @{comment.userId?.username}
+                            </p>
+                            <p className={styles.commentBody}>
+                              {comment.body}
+                            </p>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p className={styles.noComments}>No comments yet</p>
+                    )}
+
+                    <div className={styles.addComment}>
+                      <input
+                        value={commentContent}
+                        onChange={(e) =>
+                          setCommentContent(e.target.value)
+                        }
+                        placeholder="Add a comment..."
+                      />
+                      <button
+                        disabled={!commentContent.trim()}
+                        onClick={() => {
+                          dispatch(
+                            postComment({
+                              postId: post._id,
+                              token: localStorage.getItem("token"),
+                              commentBody: commentContent,
+                            })
+                          );
+                          setCommentContent("");
+                        }}
+                      >
+                        Post
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}

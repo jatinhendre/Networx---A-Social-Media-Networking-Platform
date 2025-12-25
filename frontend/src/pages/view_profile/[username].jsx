@@ -145,14 +145,21 @@ function ViewProfile({ username, profile }) {
 {bio && (
   <div className={styles.section}>
     <h3>Bio</h3>
-    <p>{bio}</p>
+
+    <div className={styles.infoCard}>
+      <p>{bio}</p>
+    </div>
   </div>
 )}
 
-          <div className={styles.section}>
-            <h3>Currently Working On</h3>
-            <p>{currentPost || "Not specified"}</p>
-          </div>
+<div className={styles.section}>
+  <h3>Current Work</h3>
+
+  <div className={styles.infoCard}>
+    <p>{currentPost || "Not specified"}</p>
+  </div>
+</div>
+
 
           <div className={styles.section}>
   <h3>Education</h3>

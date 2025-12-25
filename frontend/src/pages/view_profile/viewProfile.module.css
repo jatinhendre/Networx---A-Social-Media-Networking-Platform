@@ -4,7 +4,6 @@
   padding: 1.5rem;
 }
 
-/* HEADER */
 .header {
   display: flex;
   gap: 1.5rem;
@@ -22,47 +21,32 @@
   object-fit: cover;
 }
 
+.headerInfo {
+  flex: 1;
+}
+
 .headerInfo h2 {
   margin: 0;
 }
 
 .username {
-  color: #666;
-  font-size: 0.95rem;
+  color: #6b7280;
+  font-size: 0.9rem;
 }
 
 .bio {
-  margin-top: 0.5rem;
-  color: #333;
-}
-
-/* SECTIONS */
-.section {
-  margin-top: 1.5rem;
-  background: #fff;
-  padding: 1.2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-}
-
-.section h3 {
-  margin-bottom: 0.8rem;
-}
-
-.empty {
-  color: #888;
-  font-size: 0.9rem;
+  margin-top: 0.4rem;
+  color: #374151;
 }
 
 .buttonWrapper {
   margin-left: auto;
 }
 
-/* CONNECT BUTTON */
 .connectBtn {
   padding: 0.45rem 1.2rem;
   background-color: #0073b1;
-  color: white;
+  color: #fff;
   border: none;
   border-radius: 20px;
   font-size: 0.9rem;
@@ -76,7 +60,6 @@
   transform: scale(1.03);
 }
 
-/* CONNECTED BUTTON */
 .connectedBtn {
   padding: 0.45rem 1.2rem;
   background-color: #e4e6eb;
@@ -88,40 +71,98 @@
   cursor: not-allowed;
 }
 
-/* HEADER INFO */
-.headerInfo h2 {
-  margin: 0;
-}
-
-.username {
-  color: #777;
-  font-size: 0.9rem;
-}
-
-.bio {
-  margin-top: 0.4rem;
+.editBtn {
+  background-color: #f3f3f3;
   color: #333;
-}
-.postCard {
-  background: #f9fafb;
-  padding: 0.9rem;
-  border-radius: 10px;
-  margin-bottom: 0.7rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #ccc;
+  padding: 8px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s;
 }
 
-.postContent {
+.editBtn:hover {
+  background-color: #e0e0e0;
+}
+
+.meBadge {
+  font-size: 0.6em;
+  color: #0073b1;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+
+.section {
+  margin-top: 2rem;
+  background: #fff;
+  padding: 1.2rem;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.section h3 {
+  margin-bottom: 1rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.section p {
+  color: #374151;
+  line-height: 1.5;
+}
+
+.section strong {
+  color: #475569;
+  font-weight: 600;
+}
+
+.empty {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.infoCard {
+  background: #f8fafc;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  margin-top: 0.8rem;
+  border-left: 4px solid #cbd5e1;
+}
+
+.infoCard p {
   margin: 0;
   font-size: 0.95rem;
-  color: #222;
+  line-height: 1.6;
 }
 
-.postDate {
-  display: block;
-  margin-top: 0.4rem;
-  font-size: 0.75rem;
-  color: #777;
+.educationCard {
+  background: #f8fafc;
+  padding: 0.9rem 1rem;
+  border-radius: 10px;
+  margin-top: 0.8rem;
+  border-left: 4px solid #3b82f6;
 }
+
+.educationCard p {
+  margin: 0.25rem 0;
+  font-size: 0.92rem;
+}
+
+.workCard {
+  background: #f9fafb;
+  padding: 0.9rem 1rem;
+  border-radius: 10px;
+  margin-top: 0.8rem;
+  border-left: 4px solid #10b981;
+}
+
+.workCard p {
+  margin: 0.25rem 0;
+  font-size: 0.92rem;
+}
+
 .activityCard {
   display: flex;
   gap: 0.9rem;
@@ -157,30 +198,44 @@
   color: #777;
   margin-top: 0.4rem;
 }
-.myProfileHeading {
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 20px;
-  color: #000000;
-}
-.editBtn {
-    background-color: #f3f3f3;
-    color: #333;
-    border: 1px solid #ccc;
-    padding: 8px 20px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background 0.3s;
-}
 
-.editBtn:hover {
-    background-color: #e0e0e0;
-}
+@media (max-width: 640px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
 
-.meBadge {
-    font-size: 0.6em;
-    color: #0073b1;
-    vertical-align: middle;
-    margin-left: 8px;
-} 
+  .avatar {
+    width: 90px;
+    height: 90px;
+  }
+
+  .headerInfo,
+  .buttonWrapper {
+    width: 100%;
+  }
+
+  .buttonWrapper {
+    margin-left: 0;
+    display: flex;
+  }
+
+  .connectBtn,
+  .connectedBtn,
+  .editBtn {
+    width: 100%;
+    padding: 0.6rem;
+    font-size: 0.95rem;
+    text-align: center;
+  }
+
+  .section {
+    margin-top: 1.6rem;
+    padding: 1rem;
+  }
+
+  .section h3 {
+    margin-bottom: 0.8rem;
+  }
+}

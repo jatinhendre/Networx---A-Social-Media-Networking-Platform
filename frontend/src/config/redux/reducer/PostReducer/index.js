@@ -2,6 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   deletePost,
   getAllPosts,
+  getAllTestimonials,
+  getAllTestimonialsForPage,
   getComments,
   incrementLikes,
   postComment,
@@ -18,7 +20,8 @@ const initialState = {
   isSuccess:false,
   message: "",
   comments: [],
-
+  testimonials:[],
+  testimonialsAll:[],
   postId: "",
 };
 
@@ -124,6 +127,25 @@ const postSlice = createSlice({
       .addCase(postTestimonial.rejected,(state, action)=>{
         state.isLoading =false;
       })
+      .addCase(getAllTestimonials.fulfilled, (state, action) => {
+  state.isLoading = false;
+  state.testimonials = action.payload; // 🔥 IMPORTANT
+})
+
+      .addCase(getAllTestimonials.rejected, (state, action)=>{
+        state.isError=true;
+      })  
+      .addCase(getAllTestimonialsForPage.pending, (state)=>{
+  state.isLoading = true;
+})
+.addCase(getAllTestimonialsForPage.fulfilled, (state, action)=>{
+  state.testimonialsAll = action.payload;
+  state.isLoading = false;
+})
+.addCase(getAllTestimonialsForPage.rejected, (state)=>{
+  state.isLoading = false;
+  state.isError = true;
+})
   }, 
 });
 

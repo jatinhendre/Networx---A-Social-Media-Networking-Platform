@@ -2,6 +2,7 @@ import Post from "../models/posts.model.js";
 import User from "../models/users.model.js";
 import Comment from "../models/comments.model.js";
 import cloudinary from "../config/cloudinary.js";
+import Testimonial from "../models/testimonials.model.js";
 
 
 
@@ -201,6 +202,66 @@ export const toggleLike = async (req, res) => {
     return res.status(500).json({
       message: "Server error",
       error: err.message,
+    });
+  }
+};
+
+export const getTestimonials = async(req, res)=>{
+  try {
+    const testimonials = await Testimonial.find()
+      .populate("userId", "name profilePicture")
+      .sort({ _id: -1 }).limit(3);
+
+    res.status(200).json(testimonials);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch testimonials" });
+  }
+}
+export const getTestimonialsAll = async(req, res)=>{
+  try {
+    const testimonials = await Testimonial.find()
+      .populate("userId", "name profilePicture")
+      .sort({ _id: -1 });
+
+    res.status(200).json(testimonials);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch testimonials" });
+  }
+}
+export const postTestimonial = async (req, res) => {
+  try {
+    const { token, role, testimonial } = req.body;
+
+    if (!token) {
+      return res.status(401).json({ message: "Token missing" });
+    }
+
+    const user = await User.findOne({ token });
+
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    if (!testimonial || testimonial.trim() === "") {
+      return res.status(400).json({
+        message: "Testimonial is required",
+      });
+    }
+
+    const newTestimonial = await Testimonial.create({
+      userId: user._id, // ✅ ObjectId only
+      role: role || "Other",
+      testimonial,
+    });
+
+    res.status(201).json({
+      message: "Testimonial added successfully",
+      testimonial: newTestimonial,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Failed to post testimonial",
     });
   }
 };

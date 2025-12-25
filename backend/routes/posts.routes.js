@@ -2,7 +2,7 @@ import { Router } from 'express';
 import multer from 'multer';
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import cloudinary from "../config/cloudinary.js";
-import { createPost, getAllPosts, deletePost, toggleLike, getComments, postComment } from '../controllers/posts.controller.js';
+import { createPost, getAllPosts, deletePost, toggleLike, getComments, postComment, getTestimonials, postTestimonial, getTestimonialsAll } from '../controllers/posts.controller.js';
 import { config } from "dotenv";
 config()
 
@@ -46,5 +46,8 @@ router.route('/delete_post').post(deletePost);
 router.route('/toggle_Like').post(toggleLike);
 router.route('/getComments').get(getComments);
 router.route('/comment').post(postComment);
+router.route('/getTestimonials').get(getTestimonials);
+router.route('/getTestimonialsAll').get(getTestimonialsAll);
+router.route('/postTestimonial').post(postTestimonial);
 
 export default router;

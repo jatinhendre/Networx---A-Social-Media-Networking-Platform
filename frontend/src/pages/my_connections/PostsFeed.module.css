@@ -133,3 +133,76 @@
   background: #f9f9f9;
   border-radius: 8px;
 }
+/* =======================
+   COMMENTS (DASHBOARD STYLE)
+======================= */
+.commentSection {
+  margin-top: 12px;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 14px;
+}
+
+.singleComment {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.singleComment img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.commentUsername {
+  font-size: 12px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.commentBody {
+  font-size: 13px;
+  color: #374151;
+}
+
+.noComments {
+  font-size: 13px;
+  color: #6b7280;
+  text-align: center;
+}
+
+/* ADD COMMENT */
+.addComment {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.addComment input {
+  flex: 1;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  font-size: 13px;
+  background: #ffffff;
+}
+
+.addComment input:focus {
+  outline: none;
+  border-color: #6366f1;
+}
+
+.addComment button {
+  border: none;
+  background: none;
+  color: #4f46e5;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.addComment button:disabled {
+  color: #9ca3af;
+  cursor: not-allowed;
+}

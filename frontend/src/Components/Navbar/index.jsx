@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
 import { reset } from '@/config/redux/reducer/AuthReducer';
 import { getAboutUser } from '@/config/redux/action/AuthAction';
+import Image from 'next/image';
 
 function Navbar({ setIsSidebarOpen }) {
   const authState = useSelector((state) => state.auth);
@@ -11,7 +12,7 @@ function Navbar({ setIsSidebarOpen }) {
   const dispatch = useDispatch();
   const isLoggedIn = authState.loggedIn || authState.isTokenThere;
   const [isMoreOpen, setIsMoreOpen] = useState(false);
-
+  
   const handleLogout = () => {
     localStorage.removeItem('token');
     dispatch(reset());
@@ -33,20 +34,27 @@ function Navbar({ setIsSidebarOpen }) {
             </button>
           )}
 
-          <img
-            src="/images/navbar_logo.png"
-            alt="Networx Logo"
-            className={styles.logo}
-            onClick={() => router.push('/')}
-          />
+          <Image
+  src="/images/navbar_logo.png"
+  alt="Networx Logo"
+  width={140}
+  height={40}
+  priority
+  className={styles.logo}
+  onClick={() => router.push('/')}
+/>
         </div>
 
         {/* RIGHT */}
         {isLoggedIn ? (
           <div className={styles.right}>
             {/* Desktop */}
-            <p className={styles.navbarOptions}>Add a Testimonial</p>
-
+            <p onClick={()=>{
+              router.push('/add_testimonial')
+            }} className={styles.navbarOptions}>Add a Testimonial</p>
+            <p onClick={()=>{
+              router.push('/all_testimonials');
+            }} className={styles.navbarOptions}>Testimonials</p>
             <p
               className={styles.navbarOptions}
               onClick={async () => {
@@ -89,8 +97,14 @@ function Navbar({ setIsSidebarOpen }) {
 
               {isMoreOpen && (
                 <div className={styles.moreDropdown}>
-                  <p>Add a Testimonial</p>
-
+                  <p  onClick={() => {
+    router.push('/add_testimonial');
+    setIsMoreOpen(false);
+  }}>Add a Testimonial</p>
+    <p onClick={()=>{
+      router.push('/all_testimonials');
+      setIsMoreOpen(false);
+    }}>Testimonials</p>
                   <p
                     onClick={async () => {
                       const token = localStorage.getItem('token');

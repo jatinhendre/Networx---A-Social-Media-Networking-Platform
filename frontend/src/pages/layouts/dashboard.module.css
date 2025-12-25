@@ -34,6 +34,54 @@
 .closeBtn {
   display: none;
 }
+/* =======================
+   RECENT PROFILES
+======================= */
+.recentProfiles {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.profileCard {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 12px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.profileCard:hover {
+  background: #f3f4f6;
+  transform: translateY(-1px);
+}
+
+.profileAvatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profileInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.profileName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.profileUsername {
+  font-size: 12px;
+  color: #6b7280;
+}
 
 /* ---------------- MOBILE ---------------- */
 @media (max-width: 768px) {

@@ -1,85 +1,10 @@
-import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import UserLayout from '@/Components/UserLayout';
-import { postTestimonial } from '@/config/redux/action/PostAction';
-
-function Add_Testimonial() {
-  const router = useRouter();
-  const dispatch = useDispatch();
-
-  const [role, setRole] = useState('');
-  const [testimonial, setTestimonial] = useState('');
-
-  const postState = useSelector((state) => state.post);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (!testimonial.trim()) {
-      alert("Testimonial cannot be empty");
-      return;
-    }
-
-    dispatch(
-      postTestimonial({
-        role,
-        testimonial,
-      })
-    );
-  };
-
-  // ✅ On success redirect
-  useEffect(() => {
-    if (postState.isSuccess) {
-      router.push('/dashboard');
-    }
-  }, [postState.isSuccess, router]);
-
-  return (
-    <UserLayout>
-      <div style={styles.container}>
-        <form style={styles.card} onSubmit={handleSubmit}>
-          <h2>Add a Testimonial</h2>
-
-          {postState.isError && (
-            <p style={styles.error}>
-              {postState.message || "Failed to add testimonial"}
-            </p>
-          )}
-
-          <label>Role</label>
-          <input
-            type="text"
-            placeholder="e.g. Frontend Developer"
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            style={styles.input}
-          />
-
-          <label>Testimonial</label>
-          <textarea
-            placeholder="Write your experience..."
-            value={testimonial}
-            onChange={(e) => setTestimonial(e.target.value)}
-            style={styles.textarea}
-            rows={5}
-          />
-
-          <button
-            type="submit"
-            style={styles.button}
-            disabled={postState.isLoading}
-          >
-            {postState.isLoading ? "Submitting..." : "Submit"}
-          </button>
-        </form>
-      </div>
-    </UserLayout>
-  );
-}
-
-export default Add_Testimonial;
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import UserLayout from "../layouts/UserLayout";
+import DashboardLayout from "../layouts/DashboardLayout";
+import { postTestimonial } from "@/config/redux/action/PostAction";
+import { reset } from "@/config/redux/reducer/PostReducer"; // ✅ CORRECT RESET
 
 const styles = {
   container: {
@@ -126,3 +51,89 @@ const styles = {
     fontSize: "0.9rem",
   },
 };
+
+
+function Add_Testimonial() {
+  const router = useRouter();
+  const dispatch = useDispatch();
+
+  const [role, setRole] = useState('');
+  const [testimonial, setTestimonial] = useState('');
+
+  const postState = useSelector((state) => state.post);
+  useEffect(()=>{
+    const token = localStorage.getItem("token");
+    if(!token){
+      router.push('/login');
+    }
+  })
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!testimonial.trim()) {
+      alert("Testimonial cannot be empty");
+      return;
+    }
+
+    dispatch(
+      postTestimonial({
+        role,
+        testimonial,
+      })
+    );
+  };
+
+  // ✅ On success redirect
+  useEffect(() => {
+    if (postState.isSuccess) {
+      router.push('/dashboard');
+      dispatch(reset())
+    }
+  }, [postState.isSuccess, router]);
+
+  return (
+    <UserLayout>
+      <DashboardLayout>
+      <div style={styles.container}>
+        <form style={styles.card} onSubmit={handleSubmit}>
+          <h2>Add a Testimonial</h2>
+
+          {postState.isError && (
+            <p style={styles.error}>
+              {postState.message || "Failed to add testimonial"}
+            </p>
+          )}
+
+          <label>Role</label>
+          <input
+            type="text"
+            placeholder="e.g. Frontend Developer"
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            style={styles.input}
+          />
+
+          <label>Testimonial</label>
+          <textarea
+            placeholder="Write your experience..."
+            value={testimonial}
+            onChange={(e) => setTestimonial(e.target.value)}
+            style={styles.textarea}
+            rows={5}
+          />
+
+          <button
+            type="submit"
+            style={styles.button}
+            disabled={postState.isLoading}
+          >
+            {postState.isLoading ? "Submitting..." : "Submit"}
+          </button>
+        </form>
+      </div>
+      </DashboardLayout>
+    </UserLayout>
+  );
+}
+
+export default Add_Testimonial;

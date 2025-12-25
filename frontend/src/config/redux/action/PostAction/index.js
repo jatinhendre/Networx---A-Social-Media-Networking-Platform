@@ -87,7 +87,7 @@ export const toggleLike = createAsyncThunk(
 
 export const getComments = createAsyncThunk(
     "post/getComments",
-    async (postId, thunkAPI) => {
+    async ({postId}, thunkAPI) => {
     try{
         const response = await clientServer.get("/getComments",{
             params:{
@@ -123,13 +123,53 @@ export const postComment = createAsyncThunk(
 )
 
 export const postTestimonial = createAsyncThunk(
-    "post/postTestimonial",
-    async(data, thunkAPI)=>{
-        try{
-            const response = await clientServer.post("/add_testimonial",data);
-            return thunkAPI.fulfillWithValue(response.data);
-        }catch(err){
-            return thunkAPI.rejectWithValue(err.response.data);
+  "post/postTestimonial",
+  async (data, thunkAPI) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await clientServer.post(
+        "/postTestimonial",
+        {
+          ...data,
+          token,
         }
+      );
+
+      return thunkAPI.fulfillWithValue(response.data);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data || "Post testimonial failed"
+      );
     }
+  }
+);
+
+export const getAllTestimonials = createAsyncThunk(
+   "testimonial/getAll",
+  async (_, thunkAPI)=>{
+    try{
+      const response = await clientServer.get('/getTestimonials');
+      console.log(response);
+      return thunkAPI.fulfillWithValue(response.data);
+    }catch(err){
+      return thunkAPI.rejectWithValue(
+        err.response?.data || "Post testimonial failed"
+      );
+    }
+  }
+)
+export const getAllTestimonialsForPage = createAsyncThunk(
+   "testimonial/getAllForPage",
+  async (_, thunkAPI)=>{
+    try{
+      const response = await clientServer.get('/getTestimonialsAll');
+      console.log(response);
+      return thunkAPI.fulfillWithValue(response.data);
+    }catch(err){
+      return thunkAPI.rejectWithValue(
+        err.response?.data || "Post testimonial failed"
+      );
+    }
+  }
 )

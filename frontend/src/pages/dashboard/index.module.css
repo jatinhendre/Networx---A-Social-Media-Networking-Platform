@@ -261,3 +261,74 @@
     height: 420px; /* desktop height */
   }
 }
+@media (min-width: 768px) {
+  .postImageWrapper {
+    height: 420px; /* desktop height */
+  }
+}
+
+.commentSection {
+  margin-top: 16px;
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.singleComment {
+  padding: 10px;
+  margin-bottom: 10px;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.singleComment strong {
+  color: #4f46e5;
+  font-size: 13px;
+}
+
+.singleComment p {
+  margin: 6px 0 0 0;
+  font-size: 14px;
+  color: #374151;
+}
+
+.addCommentBox {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.addCommentBox input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.addCommentBox input:focus {
+  outline: none;
+  border-color: #6366f1;
+}
+
+.addCommentBox button {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.addCommentBox button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.addCommentBox button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

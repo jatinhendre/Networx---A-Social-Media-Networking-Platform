@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   createPost,
@@ -20,12 +20,19 @@ function Dashboard() {
   const [fileContent, setFileContent] = useState(null);
   const [openCommentSection, setOpenCommentSection] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
+  const [token, setToken] = useState(null);
 
   const authState = useSelector((state) => state.auth);
   const postState = useSelector((state) => state.post);
 
   const dispatch = useDispatch();
   const router = useRouter();
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setToken(localStorage.getItem("token"));
+    }
+  }, []);
 
   const handlePost = async () => {
     try {
@@ -36,11 +43,9 @@ function Dashboard() {
 
       const formData = new FormData();
       formData.append("body", postContent);
-      formData.append("token", localStorage.getItem("token"));
+      formData.append("token", token);
 
-      if (fileContent) {
-        formData.append("media", fileContent);
-      }
+      if (fileContent) formData.append("media", fileContent);
 
       await dispatch(createPost(formData)).unwrap();
 
@@ -61,9 +66,7 @@ function Dashboard() {
     const ok = confirm("Are you sure you want to delete this post?");
     if (!ok) return;
 
-    await dispatch(
-      deletePost({ postId, token: localStorage.getItem("token") })
-    );
+    await dispatch(deletePost({ postId, token }));
     dispatch(getAllPosts());
   };
 
@@ -74,10 +77,12 @@ function Dashboard() {
           <h1>Welcome, {authState.user?.name || "User"}!</h1>
           <br />
 
+          {/* CREATE POST */}
           <div className={styles.createPostContainer}>
             <Image
               src={
-                authState.user?.profilePicture && authState.user.profilePicture !== ""
+                authState.user?.profilePicture &&
+                authState.user.profilePicture !== ""
                   ? authState.user.profilePicture
                   : "/default.jpg"
               }
@@ -112,7 +117,8 @@ function Dashboard() {
                     onClick={() => {
                       setPreviewImage(null);
                       setFileContent(null);
-                      const fileInput = document.getElementById("fileUploading");
+                      const fileInput =
+                        document.getElementById("fileUploading");
                       if (fileInput) fileInput.value = "";
                     }}
                   >
@@ -147,6 +153,7 @@ function Dashboard() {
             </div>
           </div>
 
+          {/* POSTS */}
           <div className={styles.postsContainer}>
             {(postState.posts || []).map((post) => {
               const currentUserId = authState.user?._id;
@@ -166,6 +173,7 @@ function Dashboard() {
 
               return (
                 <div key={post._id} className={styles.singlePost}>
+                  {/* HEADER */}
                   <div className={styles.postHeader}>
                     <Image
                       src={
@@ -178,6 +186,7 @@ function Dashboard() {
                       width={44}
                       height={44}
                     />
+
                     <div>
                       <h3>{post.userId.name}</h3>
                       <p>@{post.userId.username}</p>
@@ -193,22 +202,25 @@ function Dashboard() {
                     )}
                   </div>
 
+                  {/* BODY */}
                   <p className={styles.postBody}>{post.body}</p>
 
+                  {/* MEDIA */}
                   {post.media && (
                     <div className={styles.postImageWrapper}>
-  <Image
-    src={post.media}
-    alt="post"
-    fill
-    priority
-    fetchPriority="high"
-    sizes="(max-width: 768px) 100vw, 600px"
-    style={{ objectFit: "cover" }}
-  />
-</div>
+                      <Image
+                        src={post.media}
+                        alt="post"
+                        fill
+                        priority
+                        fetchPriority="high"
+                        sizes="(max-width: 768px) 100vw, 600px"
+                        style={{ objectFit: "cover" }}
+                      />
+                    </div>
                   )}
 
+                  {/* ACTIONS */}
                   <div className={styles.optionsContainer}>
                     <button
                       className={
@@ -220,7 +232,7 @@ function Dashboard() {
                         await dispatch(
                           toggleLike({
                             postId: post._id,
-                            token: localStorage.getItem("token"),
+                            token,
                           })
                         );
                         dispatch(getAllPosts());
@@ -257,6 +269,53 @@ function Dashboard() {
                       🔗 Share
                     </button>
                   </div>
+
+                  {/* COMMENTS BOX */}
+                  {openCommentSection === post._id && (
+                    <div className={styles.commentSection}>
+                      {/* LIST COMMENTS */}
+                      {(postState.comments || []).length > 0 ? (
+                        postState.comments.map((comment) => (
+                          <div
+                            key={comment._id}
+                            className={styles.singleComment}
+                          >
+                            <strong>@{comment.userId?.username}</strong>
+                            <p>{comment.body}</p>
+                          </div>
+                        ))
+                      ) : (
+                        <p>No comments yet</p>
+                      )}
+
+                      {/* ADD COMMENT */}
+                      <div className={styles.addCommentBox}>
+                        <input
+                          value={commentContent}
+                          onChange={(e) =>
+                            setCommentContent(e.target.value)
+                          }
+                          placeholder="Add a comment..."
+                        />
+                        <button
+                          disabled={!commentContent.trim()}
+                          onClick={async () => {
+                            await dispatch(
+                              postComment({
+                                postId: post._id,
+                                token,
+                                commentBody: commentContent,
+                              })
+                            );
+                            setCommentContent("");
+                            dispatch(getComments({ postId: post._id }));
+                          }}
+                        >
+                          Post
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })}

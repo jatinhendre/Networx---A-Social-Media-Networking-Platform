@@ -1,0 +1,129 @@
+/* ---------- BASE ---------- */
+
+.container {
+  background-color: #1B3C53;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.container nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.9rem 1.2rem;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.logo {
+  height: 38px;
+  cursor: pointer;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.navbarOptions {
+  color: #E3E3E3;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.icon {
+  color: #E3E3E3;
+}
+
+.logOutOption {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+}
+
+/* CTA */
+.heroButton {
+  padding: 0.7rem 1.8rem;
+  border-radius: 200px;
+  border: none;
+  background: #456882;
+  color: #E3E3E3;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.heroButton:hover {
+  background: #E3E3E3;
+  color: #1B3C53;
+}
+
+/* ---------- HAMBURGER ---------- */
+
+.mobileMenu {
+  display: none;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  color: #E3E3E3;
+  cursor: pointer;
+}
+
+/* ---------- MORE DROPDOWN ---------- */
+
+.moreWrapper {
+  position: relative;
+  display: none;
+}
+
+.moreText {
+  color: #E3E3E3;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.moreDropdown {
+  position: absolute;
+  top: 120%;
+  right: 0;
+  background: #1B3C53;
+  min-width: 180px;
+  border-radius: 6px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+  z-index: 2000;
+}
+
+.moreDropdown p {
+  padding: 0.7rem 1rem;
+  color: #E3E3E3;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.moreDropdown p:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+/* ---------- MOBILE ---------- */
+
+@media (max-width: 768px) {
+  /* hide desktop navbar options */
+  .navbarOptions,
+  .logOutOption {
+    display: none;
+  }
+
+  /* show hamburger */
+  .mobileMenu {
+    display: block;
+  }
+
+  /* show More */
+  .moreWrapper {
+    display: block;
+  }
+}

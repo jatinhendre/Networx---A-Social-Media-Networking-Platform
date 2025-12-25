@@ -1,0 +1,60 @@
+POST http://localhost:5000/register HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "varun",
+    "name": "Varun",
+    "email": "varun@gmail.com",
+    "password": "password123"
+}
+
+###
+
+POST http://localhost:5000/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "email": "varun@gmail.com",
+    "password": "password123"
+}
+
+###
+
+GET http://localhost:5000/get_user_profile?token=b71cb7405d6b7aacc722a7cdec454e4562d128ff2ab898301057cfb764028dd7 HTTP/1.1
+Content-Type: application/json
+
+###
+
+POST http://localhost:5000/update_profile_data?token=aaea1144f8c97b9157ffc1dcea12ceb73585f3caa9761acd8bfb23cc26ba0e6c HTTP/1.1
+Content-Type: application/json
+
+{
+    "bio": "just flexing myself",
+    "currentPost": "hr",
+    "pastWork": [
+        {
+            "company": "connectwise",
+            "position": "hr",
+            "years": "2"
+        }
+    ],
+    "education": [
+        {
+            "school": "xyz",
+            "degree": "btech",
+            "fieldOfStudy": "cs"
+        }
+    ]
+}
+
+###
+
+POST http://localhost:5000/postTestimonial HTTP/1.1
+Content-Type: application/json
+
+{
+    "token":"7764faecdd3fa7312c69572df28b4df486ca37bda095998b196200b7751a95ec",
+    "role":"comps",
+    "testimonial":"nothing"
+}
+###

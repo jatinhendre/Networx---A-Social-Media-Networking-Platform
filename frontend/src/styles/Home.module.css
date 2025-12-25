@@ -1,0 +1,128 @@
+
+.heroWrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 2rem;
+  background-color: #E3E3E3;
+  font-family: "Outfit",system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+.hero {
+  max-width: 1200px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4rem;
+}
+
+.heroLeft {
+  flex: 0.55;
+}
+
+.heroTitle {
+  font-size: 3.2rem;
+  line-height: 1.15;
+  font-weight: 700;
+  color: #1B3C53;
+  margin-bottom: 1.2rem;
+}
+
+.gradientText {
+  background: linear-gradient(90deg, #234C6A, #456882);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.heroSubtitle {
+  font-size: 1.1rem;
+  color: #6b7280;
+  max-width: 520px;
+  margin-bottom: 2.5rem;
+}
+
+.heroActions {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.primaryButton {
+  padding: 0.85rem 2.4rem;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(90deg, #456882, #1d1d1d);
+  color: #E3E3E3;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 12px 35px rgba(54, 54, 54, 0.45);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.primaryButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 45px rgba(124, 58, 237, 0.55);
+}
+
+.secondaryButton {
+  padding: 0.85rem 2.4rem;
+  border-radius: 999px;
+  border: 1.5px solid #e5e7eb;
+  background: #ffffff;
+  color: #111827;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease, border 0.2s ease;
+}
+
+.secondaryButton:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.heroRight {
+  flex: 0.45;
+  display: flex;
+  justify-content: center;
+}
+
+.imageWrapper {
+  position: relative;
+  width: 420px;
+  height: 420px;
+}
+
+.heroImage {
+  object-fit: contain;
+}
+@media (max-width: 900px) {
+  .hero {
+    flex-direction: column-reverse;
+    text-align: center;
+    gap: 3rem;
+  }
+
+  .heroSubtitle {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .heroActions {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .heroTitle {
+    font-size: 2.4rem;
+  }
+
+  .imageWrapper {
+    width: 300px;
+    height: 300px;
+  }
+}

@@ -184,20 +184,6 @@
   color: #dc2626;
 }
 
-@media (max-width: 640px) {
-  .createPostContainer {
-    flex-direction: column;
-  }
-
-  .postButton {
-    align-self: flex-end;
-  }
-
-  .optionsContainer {
-    justify-content: space-between;
-  }
-}
-
 .previewWrapper {
   position: relative;
   margin-top: 10px;
@@ -222,6 +208,7 @@
   border-radius: 50%;
   cursor: pointer;
 }
+
 .createPostRight {
   flex: 1;
   display: flex;
@@ -241,31 +228,15 @@
   gap: 10px;
 }
 
-@media (max-width: 640px) {
-  .createPostTitle {
-    font-size: 14px;
-  }
-
-  .createPostActions {
-    justify-content: space-between;
-  }
-}
 .postImageWrapper {
   position: relative;
   width: 100%;
-  height: 280px; /* mobile height */
+  height: 280px;
 }
 
-@media (min-width: 768px) {
-  .postImageWrapper {
-    height: 420px; /* desktop height */
-  }
-}
-@media (min-width: 768px) {
-  .postImageWrapper {
-    height: 420px; /* desktop height */
-  }
-}
+/* ============================================ */
+/* COMMENT SECTION STYLES - THESE WERE MISSING */
+/* ============================================ */
 
 .commentSection {
   margin-top: 16px;
@@ -273,6 +244,7 @@
   background: #f9fafb;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
+  display: block;
 }
 
 .singleComment {
@@ -286,12 +258,15 @@
 .singleComment strong {
   color: #4f46e5;
   font-size: 13px;
+  display: block;
+  margin-bottom: 4px;
 }
 
 .singleComment p {
-  margin: 6px 0 0 0;
+  margin: 0;
   font-size: 14px;
   color: #374151;
+  line-height: 1.5;
 }
 
 .addCommentBox {
@@ -306,6 +281,7 @@
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   font-size: 14px;
+  background: #ffffff;
 }
 
 .addCommentBox input:focus {
@@ -331,4 +307,35 @@
 .addCommentBox button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  background: #9ca3af;
+}
+
+/* ============================================ */
+
+@media (max-width: 640px) {
+  .createPostContainer {
+    flex-direction: column;
+  }
+
+  .postButton {
+    align-self: flex-end;
+  }
+
+  .optionsContainer {
+    justify-content: space-between;
+  }
+
+  .createPostTitle {
+    font-size: 14px;
+  }
+
+  .createPostActions {
+    justify-content: space-between;
+  }
+}
+
+@media (min-width: 768px) {
+  .postImageWrapper {
+    height: 420px;
+  }
 }

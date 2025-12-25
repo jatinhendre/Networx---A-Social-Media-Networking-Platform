@@ -9,7 +9,6 @@ import userRoutes from './routes/users.routes.js'
 
 const app = express()
 
-import cors from "cors";
 
 app.use(cors({
   origin: [

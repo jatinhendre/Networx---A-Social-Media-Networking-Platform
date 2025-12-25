@@ -18,7 +18,12 @@ function PostsFeed({ connections }) {
   const [commentContent, setCommentContent] = useState("");
   const [openCommentSection, setOpenCommentSection] = useState(null);
 
-  const token = authState.user?.token || localStorage.getItem("token");
+  const [token, setToken] = useState(null);
+
+  useEffect(() => {
+    const t = localStorage.getItem("token");
+    setToken(t);
+  }, []);
   const currentUserId = authState.user?._id;
 
   /* ---------------- FETCH POSTS ---------------- */

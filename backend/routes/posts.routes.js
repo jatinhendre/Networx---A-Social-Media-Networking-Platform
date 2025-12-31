@@ -23,7 +23,6 @@ const upload = multer({
     fileSize: 5 * 1024 * 1024, // 5MB limit
   },
   fileFilter: (req, file, cb) => {
-    console.log("📎 File received:", file.originalname, file.mimetype);
     cb(null, true);
   }
 });
@@ -31,10 +30,10 @@ const upload = multer({
 // Add error handling middleware
 const handleMulterError = (err, req, res, next) => {
   if (err instanceof multer.MulterError) {
-    console.error("❌ Multer Error:", err);
+    console.error("Multer Error:", err);
     return res.status(400).json({ message: err.message });
   } else if (err) {
-    console.error("❌ Upload Error:", err);
+    console.error("Upload Error:", err);
     return res.status(500).json({ message: err.message });
   }
   next();

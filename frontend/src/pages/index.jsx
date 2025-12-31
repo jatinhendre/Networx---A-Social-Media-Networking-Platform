@@ -32,7 +32,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* RIGHT */}
           <div className={styles.heroRight}>
             <div className={styles.imageWrapper}>
               <Image

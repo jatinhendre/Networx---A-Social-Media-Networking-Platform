@@ -83,7 +83,6 @@ function Add_Testimonial() {
     );
   };
 
-  // ✅ On success redirect
   useEffect(() => {
     if (postState.isSuccess) {
       router.push('/dashboard');

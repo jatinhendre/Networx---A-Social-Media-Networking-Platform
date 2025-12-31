@@ -86,7 +86,7 @@ function Navbar({ setIsSidebarOpen }) {
               </svg>
             </div>
 
-            {/* MOBILE: MORE */}
+            {/* MOBILE */}
             <div className={styles.moreWrapper}>
               <p
                 className={styles.moreText}

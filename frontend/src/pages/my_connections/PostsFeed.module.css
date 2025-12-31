@@ -81,7 +81,6 @@
   border-top: 1px solid #f0f0f0;
 }
 
-/* 🔥 BASE BUTTON (LIKE + COMMENT SAME SIZE) */
 .likeButton,
 .commentButton,
 .shareButton {
@@ -104,24 +103,20 @@
   transition: background 0.2s ease, color 0.2s ease;
 }
 
-/* 🤍 UNLIKED */
 .likeButton:hover {
   background: #f0f0f0;
 }
 
-/* ❤️ LIKED — ONLY COLOR CHANGE */
 .likedButton {
   background: #ffe6ea;
   color: #e0245e;
   border-color: #f5b5c6;
 }
 
-/* 💬 COMMENT */
 .commentButton:hover {
   background: #e0f0ff;
 }
 
-/* 🔗 SHARE */
 .shareButton:hover {
   background: #e8f5e9;
 }
@@ -133,9 +128,7 @@
   background: #f9f9f9;
   border-radius: 8px;
 }
-/* =======================
-   COMMENTS (DASHBOARD STYLE)
-======================= */
+
 .commentSection {
   margin-top: 12px;
   padding: 12px;
@@ -173,7 +166,6 @@
   text-align: center;
 }
 
-/* ADD COMMENT */
 .addComment {
   display: flex;
   gap: 8px;

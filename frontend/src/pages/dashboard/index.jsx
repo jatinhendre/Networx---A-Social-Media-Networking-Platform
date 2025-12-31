@@ -252,7 +252,7 @@ function Dashboard() {
                         }
                       }}
                     >
-                      💬
+                      💬Comment
                     </button>
 
                     <button

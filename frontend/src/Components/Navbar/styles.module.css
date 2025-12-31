@@ -1,4 +1,4 @@
-/* ---------- BASE ---------- */
+
 
 .container {
   background-color: #1B3C53;
@@ -45,8 +45,6 @@
   gap: 0.4rem;
   cursor: pointer;
 }
-
-/* CTA */
 .heroButton {
   padding: 0.7rem 1.8rem;
   border-radius: 200px;
@@ -62,7 +60,6 @@
   color: #1B3C53;
 }
 
-/* ---------- HAMBURGER ---------- */
 
 .mobileMenu {
   display: none;
@@ -73,7 +70,6 @@
   cursor: pointer;
 }
 
-/* ---------- MORE DROPDOWN ---------- */
 
 .moreWrapper {
   position: relative;
@@ -108,21 +104,15 @@
   background: rgba(255,255,255,0.1);
 }
 
-/* ---------- MOBILE ---------- */
 
 @media (max-width: 768px) {
-  /* hide desktop navbar options */
   .navbarOptions,
   .logOutOption {
     display: none;
   }
-
-  /* show hamburger */
   .mobileMenu {
     display: block;
   }
-
-  /* show More */
   .moreWrapper {
     display: block;
   }

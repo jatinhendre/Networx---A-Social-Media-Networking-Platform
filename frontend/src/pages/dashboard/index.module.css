@@ -234,10 +234,6 @@
   height: 280px;
 }
 
-/* ============================================ */
-/* COMMENT SECTION STYLES - THESE WERE MISSING */
-/* ============================================ */
-
 .commentSection {
   margin-top: 16px;
   padding: 16px;
@@ -309,8 +305,6 @@
   cursor: not-allowed;
   background: #9ca3af;
 }
-
-/* ============================================ */
 
 @media (max-width: 640px) {
   .createPostContainer {

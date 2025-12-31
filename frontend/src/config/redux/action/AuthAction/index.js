@@ -27,20 +27,12 @@ export const registerUser = createAsyncThunk(
     "user/register",
     async (userAgent, thunkAPI) => {
         try{
-          console.log("BASE URL 👉", clientServer.defaults.baseURL);
-
             const response  =await clientServer.post("/register",{
                 email:userAgent.email,
                 password:userAgent.password,
                 username:userAgent.username,
                 name:userAgent.name
             });
-            // if(response.data.token){
-            //     localStorage.setItem("token", response.data.token);
-            // }else{
-            //     return thunkAPI.rejectWithValue("Registration failed");
-            // }
-            // return thunkAPI.fulfillWithValue(response.data.token);
         }catch(err){
             return thunkAPI.rejectWithValue(err.response.data);
         }
@@ -92,8 +84,6 @@ export const sendConnectionRequest = createAsyncThunk(
     }
   }
 );
-// File: config/redux/action/AuthAction.js
-
 export const getConnectionStatus = createAsyncThunk(
     "user/getConnectionStatus",
     async ({ token, targetUserId }, thunkAPI) => {
@@ -101,7 +91,7 @@ export const getConnectionStatus = createAsyncThunk(
             const response = await clientServer.get("/user/getConnectionStatus", {
                 params: { token, targetUserId }
             });
-            return response.data; // { status: "none" | "connected" | "pending_sent" | "pending_received" }
+            return response.data; 
         } catch (err) {
             return thunkAPI.rejectWithValue(err.response.data);
         }
@@ -111,7 +101,6 @@ export const getConnectionRequests = createAsyncThunk(
   "user/getConnectionRequests",
   async (user, thunkAPI) => {
     try {
-      // Fixed: Using correct endpoint from backend
       const response = await clientServer.get("/user/myConnectionRequest", {
         params: {
           token: user.token,

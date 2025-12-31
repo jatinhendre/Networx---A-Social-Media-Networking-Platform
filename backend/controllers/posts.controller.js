@@ -8,7 +8,7 @@ import Testimonial from "../models/testimonials.model.js";
 
 export const createPost = async (req, res) => {
     try {
-        console.log("📝 CREATE POST REQUEST");
+        console.log("CREATE POST REQUEST");
         console.log("Body:", req.body);
         console.log("File:", req.file);
         console.log("Content-Type:", req.headers["content-type"]);
@@ -38,13 +38,13 @@ export const createPost = async (req, res) => {
 
         await post.save();
         
-        console.log("✅ Post created successfully:", post._id);
+        console.log("Post created successfully:", post._id);
         return res.status(201).json({ 
             message: "Post created successfully", 
             post: post 
         });
     } catch (err) {
-        console.error("❌ CREATE POST ERROR:", err);
+        console.error("CREATE POST ERROR:", err);
         return res.status(500).json({ 
             message: "Server error", 
             error: err.message 
@@ -172,7 +172,6 @@ export const toggleLike = async (req, res) => {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    // 🔥 SAFETY GUARD
     if (!Array.isArray(post.likes)) {
       post.likes = [];
     }
@@ -249,7 +248,7 @@ export const postTestimonial = async (req, res) => {
     }
 
     const newTestimonial = await Testimonial.create({
-      userId: user._id, // ✅ ObjectId only
+      userId: user._id,
       role: role || "Other",
       testimonial,
     });

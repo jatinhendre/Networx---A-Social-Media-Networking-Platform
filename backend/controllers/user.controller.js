@@ -15,7 +15,6 @@ const convertUserDataToPDF = async(userProfile)=>{
     const outputPath = 'uploads/'+crypto.randomBytes(16).toString('hex') + '.pdf';
     const stream = fs.createWriteStream(outputPath);
     doc.pipe(stream);
-  // ✅ Check if profile picture exists before adding it
     const picturePath = 'uploads/' + userProfile.userId.profilePicture;
     if(fs.existsSync(picturePath)){
         doc.image(picturePath, {align:"center", width:100});
@@ -99,7 +98,6 @@ export const updateUser = async (req, res) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    // 🔒 Username uniqueness check ONLY
     if (username) {
       const existingUser = await User.findOne({ username });
       if (
@@ -110,7 +108,6 @@ export const updateUser = async (req, res) => {
       }
     }
 
-    // ✅ Only allow safe fields
     if (name !== undefined) user.name = name;
     if (username !== undefined) user.username = username;
 
@@ -188,7 +185,7 @@ export const getUserProfileBasedOnUsername = async(req, res)=>{
         return res.status(500).json({message:"Server error", error:error.message});
     }   
 }
-// Connection Request - Send a new connection request
+
 export const connectionRequest = async(req, res) => {
     console.log(req.body);
     const {token, connectionId} = req.body;
@@ -203,7 +200,6 @@ export const connectionRequest = async(req, res) => {
             return res.status(404).json({message: "Connection user not found!!"});
         }
         
-        // Check if connection already exists (in either direction)
         const existingConnection = await Connection.findOne({
             $or: [
                 { userId: user._id, connectionId: connectionId },
@@ -224,7 +220,6 @@ export const connectionRequest = async(req, res) => {
         });
         await request.save();
         
-        // Return the newly created connection with populated user data
         const newConnection = await Connection.findById(request._id)
             .populate('userId')
             .populate('connectionId');
@@ -239,7 +234,6 @@ export const connectionRequest = async(req, res) => {
     }
 }
 
-// Get Connection Requests - Get pending requests sent TO you
 export const myConnectionRequests = async(req, res) => {  
     try {
         const {token} = req.query;
@@ -248,8 +242,6 @@ export const myConnectionRequests = async(req, res) => {
             return res.status(401).json({message: "User not found!!"});          
         }
         
-        // Find requests where YOU are the connectionId (receiver)
-        // and status is null (pending)
         const requests = await Connection.find({
             connectionId: user._id, 
             status_accepted: null
@@ -263,7 +255,6 @@ export const myConnectionRequests = async(req, res) => {
     }
 }
 
-// Get My Connections - Get ONLY accepted connections
 export const getMyConnections = async(req, res) => {  
     try {
         const {token} = req.query;
@@ -272,13 +263,12 @@ export const getMyConnections = async(req, res) => {
             return res.status(401).json({message: "User not found!!"});          
         }   
         
-        // 🔥 FIX: Only get ACCEPTED connections (status_accepted: true)
         const connections = await Connection.find({
             $or: [
                 { userId: user._id },
                 { connectionId: user._id }
             ],
-            status_accepted: true  // ✅ Only accepted connections
+            status_accepted: true  
         })
         .populate('connectionId', 'name email profilePicture username')
         .populate('userId', 'name email profilePicture username');
@@ -291,7 +281,6 @@ export const getMyConnections = async(req, res) => {
     }   
 }
 
-// Accept or Reject Connection Request
 export const acceptConnectionRequest = async(req, res) => {
     try {
         const {token, requestId, action_type} = req.body;
@@ -305,7 +294,6 @@ export const acceptConnectionRequest = async(req, res) => {
             return res.status(404).json({message: "Connection request not found!!"});
         }
         
-        // Verify that the current user is the receiver of the request
         if (connectionRequest.connectionId.toString() !== user._id.toString()) {
             return res.status(403).json({
                 message: "You are not authorized to accept/reject this request!"
@@ -319,7 +307,6 @@ export const acceptConnectionRequest = async(req, res) => {
             });
         }
         
-        // Accept the request
         connectionRequest.status_accepted = true;
         await connectionRequest.save();
         
@@ -332,15 +319,11 @@ export const acceptConnectionRequest = async(req, res) => {
     }
 }
 
-// File: controllers/userController.js
 
 export const getConnectionStatus = async (req, res) => {
     try {
         const { token, targetUserId } = req.query;
         const user = await User.findOne({ token: token });
-        if (!user) return res.status(401).json({ message: "User not found" });
-
-        // Find any connection record involving both users
         const connection = await Connection.findOne({
             $or: [
                 { userId: user._id, connectionId: targetUserId },
@@ -356,7 +339,6 @@ export const getConnectionStatus = async (req, res) => {
             return res.status(200).json({ status: "connected" });
         }
 
-        // If pending, check who sent it
         if (connection.userId.toString() === user._id.toString()) {
             return res.status(200).json({ status: "pending_sent" });
         } else {

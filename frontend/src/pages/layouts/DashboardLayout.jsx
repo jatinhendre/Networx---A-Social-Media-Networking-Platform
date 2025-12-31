@@ -100,10 +100,8 @@ function DashboardLayout({ children, isSidebarOpen, setIsSidebarOpen }) {
         </div>
       </div>
 
-      {/* FEED */}
       <div className={styles.feedContainer}>{children}</div>
 
-      {/* RIGHT PANEL */}
       <div className={styles.homeContainer_right}>
   <h3>Recent Profiles</h3>
 

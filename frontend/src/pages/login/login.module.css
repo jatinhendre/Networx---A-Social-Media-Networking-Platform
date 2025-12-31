@@ -1,14 +1,14 @@
-/* Full page background */
+
 .container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: #fff5f4; /* soft pink like screenshot */
+  background: #fff5f4;
   padding: 32px 16px;
 }
 
-/* Main card wrapper */
+
 .card_container {
   width: 100%;
   max-width: 1000px;
@@ -20,7 +20,6 @@
   overflow: hidden;
 }
 
-/* Title (Sign In / Sign Up) – pill style */
 .title {
   display: inline-flex;
   align-items: center;
@@ -31,10 +30,9 @@
   color: #ffffff;
   font-size: 1.4rem;
   font-weight: 600;
-  margin: 0 auto 0.3rem auto; /* center horizontally, small gap below */
+  margin: 0 auto 0.3rem auto;
 }
 
-/* Left side (form side) */
 .card_container_left {
   flex: 1;
   display: flex;
@@ -44,7 +42,6 @@
   background: #ffffff;
 }
 
-/* Wrapper around all inputs */
 .inputContainer {
   display: flex;
   flex-direction: column;
@@ -53,14 +50,13 @@
   margin-top: 0.75rem;
 }
 
-/* First row with username + name */
 .inputRow {
   display: flex;
   gap: 12px;
   width: 100%;
 }
 
-/* Each input */
+
 .inputField {
   flex: 1;
   padding: 12px 14px;
@@ -73,12 +69,12 @@
     transform 0.1s ease;
 }
 
-/* Placeholder subtle */
+
 .inputField::placeholder {
   color: #a0a0a0;
 }
 
-/* Focus state */
+
 .inputField:focus {
   border-color: #2563eb;
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
@@ -89,7 +85,8 @@
 .image{
   height: 300px;
 }
-/* Right side panel */
+
+
 .card_container_right {
   flex: 0.45;
   background-color: #00448c;
@@ -100,14 +97,14 @@
   padding: 32px 24px;
 }
 
-/* Text inside right panel */
+
 .card_container_right p {
   color: #ffffff;
   font-size: 1rem;
   margin-bottom: 10px;
 }
 
-/* Main button (Sign In / Sign Up) – grey pill like screenshot */
+
 .buttonOutline {
   margin-top: 28px;
   width: 100%;
@@ -131,7 +128,7 @@
   transform: translateY(-1px);
 }
 
-/* Mobile: stack inputs vertically instead of 2-in-a-row */
+
 @media (max-width: 600px) {
   .card_container {
     min-height: auto;
@@ -153,7 +150,7 @@
   }
 }
 
-/* Right-side button (Sign In / Sign Up) */
+
 .buttonFill {
   margin-top: 12px;
   padding: 10px 24px;

@@ -77,8 +77,6 @@ const authSlice = createSlice({
 
         state.isError = true;
       })
-
-      // REGISTER
       .addCase(registerUser.pending, (state) => {
         state.isLoading = true;
         state.message = "Registering User......";
@@ -127,13 +125,11 @@ const authSlice = createSlice({
         state.isError = true;
       })
 
-      // GET ALL USERS
       .addCase(getAllUsers.fulfilled, (state, action) => {
         state.allUsers = action.payload;
         state.all_profile_fetched = true;
       })
 
-      // GET CONNECTION REQUESTS
       .addCase(getConnectionRequests.pending, (state) => {
         state.isLoading = true;
       })
@@ -145,8 +141,6 @@ const authSlice = createSlice({
         state.connectionRequests = [];
         state.isLoading = false;
       })
-
-      // GET MY CONNECTIONS
       .addCase(getMyConnections.pending, (state) => {
         state.isLoading = true;
       })
@@ -165,7 +159,6 @@ const authSlice = createSlice({
   state.isLoading = false;
   state.message = "Connection request sent successfully";
   state.isSuccess = true;
-  // Add the new pending connection to state immediately
   if (action.payload && action.payload.connection) {
     state.connections.push(action.payload.connection);
   }
@@ -179,7 +172,6 @@ const authSlice = createSlice({
             : payload?.message) || "Failed to send connection request";
         state.isError = true;
       })
-      // ACCEPT/REJECT CONNECTION REQUEST
       .addCase(acceptConnectionRequest.pending, (state) => {
         state.isLoading = true;
       })

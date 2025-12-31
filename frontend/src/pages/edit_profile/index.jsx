@@ -26,8 +26,6 @@ function EditProfile() {
     education: [],
     pastWork: [],
   });
-
-  /* ---------------- FETCH CURRENT DATA ---------------- */
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -37,7 +35,6 @@ function EditProfile() {
           name: res.data.userId.name,
           username: res.data.userId.username,
 
-          // IMPORTANT — Cloudinary URL direct
           profilePicture: res.data.userId.profilePicture || "",
         });
 
@@ -50,7 +47,6 @@ function EditProfile() {
     if (token) fetchProfile();
   }, [token]);
 
-  /* ---------------- HANDLERS ---------------- */
 
   const handleImageChange = (e) => {
     setProfileImage(e.target.files[0]);
@@ -68,8 +64,6 @@ function EditProfile() {
         "/update_profile_picture",
         formData
       );
-
-      // EXPECTING: res.data.profilePicture = cloudinary secure_url
       setUserData((prev) => ({
         ...prev,
         profilePicture: res.data.profilePicture,
@@ -82,7 +76,6 @@ function EditProfile() {
     }
   };
 
-  /* ----------- text field handlers ----------- */
 
   const handleUserChange = (e) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
@@ -124,7 +117,6 @@ function EditProfile() {
     });
   };
 
-  /* ---------------- SUBMIT ---------------- */
   const handleSubmit = async () => {
     try {
       await clientServer.post("/update_profile", {
@@ -177,16 +169,12 @@ function EditProfile() {
           </button>
         </div>
 
-        {/* Remaining UI same */}
-        {/* ----------------------- */}
-
 
 
         <div className={styles.container}>
             <div className={styles.cardWrapper}>
           <h2>Edit Profile</h2>
 
-          {/* BASIC INFO */}
           <section className={styles.form}>
             <h3>Basic Info</h3>
             <input name="name" value={userData.name} onChange={handleUserChange} placeholder="Name" />
@@ -194,19 +182,18 @@ function EditProfile() {
             
           </section>
 
-          {/* BIO */}
+         
           <section className={styles.form}>
             <h3>Bio</h3>
             <textarea name="bio" value={profileData.bio} onChange={handleProfileChange} />
           </section>
 
-          {/* CURRENT POST */}
           <section className={styles.form}>
             <h3>Current Position</h3>
             <input name="currentPost" value={profileData.currentPost} onChange={handleProfileChange} />
           </section>
 
-          {/* EDUCATION */}
+        
           <section className={styles.form}>
             <h3>Education</h3>
             {profileData.education.map((edu, i) => (
@@ -219,7 +206,6 @@ function EditProfile() {
             <button onClick={addEducation}>+ Add Education</button>
           </section>
 
-          {/* WORK */}
           <section className={styles.form}>
             <h3>Work Experience</h3>
             {profileData.pastWork.map((work, i) => (

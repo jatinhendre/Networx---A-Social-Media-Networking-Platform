@@ -22,7 +22,7 @@ function MyConnections() {
   const [token, setToken] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // 1. FIXED: Standardized token retrieval to match ViewProfile.js
+
   useEffect(() => {
     const foundToken = localStorage.getItem('token') || 
                        localStorage.getItem('userToken') || 
@@ -41,39 +41,35 @@ function MyConnections() {
     }
   }, [token, dispatch]);
 
-  // 2. FIXED: Robust helper to identify the "other" person in a connection
+  
   const getOtherUser = (conn) => {
     if (!conn || !authState.user) return null;
     const currentUserId = String(authState.user._id);
     
-    // Check if the sender (userId) is the logged-in user
+   
     const senderId = String(conn.userId?._id || conn.userId);
     
-    // If I am the sender, the 'other' person is the connectionId.
-    // Otherwise, the 'other' person is the userId (the person who sent it to me).
+   
     return senderId === currentUserId ? conn.connectionId : conn.userId;
   };
 
-  // 3. FIXED: Helper to handle image paths consistently
  const getAvatarUrl = (user) => {
   return user?.profilePicture && user.profilePicture !== ""
     ? user.profilePicture
     : "/default.jpg";
 };
 
-  // Filter only accepted connections
   const acceptedConnections = (authState.connections || []).filter(
     (conn) => conn.status_accepted === true
   );
 
-  // 4. FIXED: Search filter now correctly targets the 'other' user
+ 
   const filterBySearch = (items, searchTerm, isRequestsTab) => {
     if (!searchTerm.trim()) return items;
     
     const lowerSearch = searchTerm.toLowerCase();
     return items.filter(item => {
-      // For requests tab, the person we care about is always 'userId'
-      // For connections tab, we need to find who the 'other' person is
+      
       const targetUser = isRequestsTab ? item.userId : getOtherUser(item);
       
       return (
@@ -84,7 +80,7 @@ function MyConnections() {
     });
   };
 
-  // Apply search filter with context
+  
   const filteredRequests = filterBySearch(
     authState.connectionRequests || [], 
     searchQuery,
@@ -97,7 +93,7 @@ function MyConnections() {
     false
   );
 
-  // Handle accept/reject connection request
+  
   const handleConnectionAction = async (requestId, actionType) => {
     if (!token) return;
     setProcessingRequest(requestId);
@@ -107,11 +103,11 @@ function MyConnections() {
         acceptConnectionRequest({
           token: token,
           requestId: requestId,
-          action_type: actionType, // Ensure backend uses underscore
+          action_type: actionType, 
         })
       ).unwrap();
 
-      // Refresh both lists
+     
       dispatch(getConnectionRequests({ token }));
       dispatch(getMyConnections({ token }));
     } catch (error) {
@@ -154,7 +150,7 @@ function MyConnections() {
         <div className={styles.container}>
           <h2 className={styles.pageTitle}>My Connections</h2>
 
-          {/* Tab Navigation */}
+          
           <div className={styles.tabNavigation}>
             <button
               onClick={() => handleTabChange("connections")}
@@ -170,7 +166,7 @@ function MyConnections() {
             </button>
           </div>
 
-          {/* Search Bar */}
+          
           <div className={styles.searchContainer}>
             <div className={styles.searchWrapper}>
               <svg className={styles.searchIcon} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -190,7 +186,7 @@ function MyConnections() {
             </div>
           </div>
 
-          {/* Connection Requests Tab */}
+          
           {activeTab === "requests" && (
             <div className={styles.tabContent}>
               <h3 className={styles.sectionTitle}>Pending Requests</h3>
@@ -242,7 +238,7 @@ function MyConnections() {
             </div>
           )}
 
-          {/* Accepted Connections Tab */}
+          
           {activeTab === "connections" && (
             <div className={styles.tabContent}>
               <h3 className={styles.sectionTitle}>Your Network</h3>

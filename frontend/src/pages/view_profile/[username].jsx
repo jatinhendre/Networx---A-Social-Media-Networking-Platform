@@ -105,7 +105,6 @@ function ViewProfile({ username, profile }) {
             </div>
 
             <div className={styles.buttonWrapper}>
-              {/* --- NEW EDIT PROFILE LOGIC --- */}
               {isMyProfile ? (
                 <button 
                   className={styles.editBtn} 
@@ -114,7 +113,6 @@ function ViewProfile({ username, profile }) {
                   Edit Profile
                 </button>
               ) : (
-                /* --- EXISTING CONNECTION LOGIC --- */
                 <>
                   {connectionStatus === "connected" && (
                     <button className={styles.connectedBtn} disabled>Connected</button>

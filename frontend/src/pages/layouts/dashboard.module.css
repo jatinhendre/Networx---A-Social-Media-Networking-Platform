@@ -34,9 +34,7 @@
 .closeBtn {
   display: none;
 }
-/* =======================
-   RECENT PROFILES
-======================= */
+
 .recentProfiles {
   display: flex;
   flex-direction: column;
@@ -83,7 +81,7 @@
   color: #6b7280;
 }
 
-/* ---------------- MOBILE ---------------- */
+
 @media (max-width: 768px) {
   .homeContainer {
     flex-direction: column;

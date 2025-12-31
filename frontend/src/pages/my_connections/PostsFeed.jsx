@@ -27,12 +27,11 @@ const authState = useSelector((state) => state.auth) || {};
   }, []);
   const currentUserId = authState.user?._id;
 
-  /* ---------------- FETCH POSTS ---------------- */
+  
   useEffect(() => {
     dispatch(getAllPosts());
   }, [dispatch]);
 
-  /* ---------------- CONNECTION FILTER ---------------- */
   const safeConnections = connections || [];
 
   const connectionIds = safeConnections.map((conn) =>
@@ -46,7 +45,7 @@ const authState = useSelector((state) => state.auth) || {};
   const filteredPosts = safePosts.filter((post) =>
     connectionIds.includes(post.userId._id)
   );
-  /* ---------------- HANDLERS ---------------- */
+  
   const handleLike = (postId) => {
     if (!token) {
       alert("Session expired. Please login again.");
@@ -85,7 +84,6 @@ const authState = useSelector((state) => state.auth) || {};
             return (
               
               <div key={post._id} className={styles.postCard}>
-                {/* HEADER */}
                 <div className={styles.postHeader}>
                   <Image
                     src={
@@ -118,10 +116,9 @@ const authState = useSelector((state) => state.auth) || {};
                   )}
                 </div>
 
-                {/* BODY */}
                 <div className={styles.postBody}>{post.body}</div>
 
-                {/* MEDIA */}
+              
                 {post.media && (
                   <Image
                     src={post.media}
@@ -132,7 +129,7 @@ const authState = useSelector((state) => state.auth) || {};
                   />
                 )}
 
-                {/* ACTIONS */}
+                
                 <div className={styles.postActions}>
                   <button
                     onClick={() => handleLike(post._id)}
@@ -172,7 +169,7 @@ const authState = useSelector((state) => state.auth) || {};
                   </button>
                 </div>
 
-                {/* COMMENTS (Dashboard-style) */}
+              
                 {openCommentSection === post._id && (
                   <div className={styles.commentSection}>
                     {postState.comments?.length > 0 ? (

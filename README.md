@@ -79,7 +79,7 @@ Want to run Networx on your machine? Here's how:
 
 ### Step 1: Clone the Repository
 ```bash
-git clone https://github.com/yourusername/networx.git
+git clone [https://github.com/yourusername/networx.git](https://github.com/jatinhendre/Networx-lets-connect.git)
 cd networx
 ```
 

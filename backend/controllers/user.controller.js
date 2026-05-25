@@ -11,7 +11,6 @@ import cloudinary from "../config/cloudinary.js";
 
 const convertUserDataToPDF = async(userProfile)=>{
     const doc = new PDFDocument();
-
     const outputPath = 'uploads/'+crypto.randomBytes(16).toString('hex') + '.pdf';
     const stream = fs.createWriteStream(outputPath);
     doc.pipe(stream);

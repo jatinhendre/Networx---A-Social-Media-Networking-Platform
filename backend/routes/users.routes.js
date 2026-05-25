@@ -4,6 +4,7 @@ import {login} from '../controllers/user.controller.js';
 import multer from 'multer';
 import {updateProfilePicture} from '../controllers/user.controller.js';
 import { getProfile ,updateProfileData} from '../controllers/user.controller.js';
+import { requireAuth } from '../middleware/auth.middleware.js';
 const router = Router();
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import cloudinary from "../config/cloudinary.js";
@@ -34,5 +35,5 @@ router.route('/user/getConnectionStatus').get(getConnectionStatus)
 router.route('/user/acceptConnectionRequest').post(acceptConnectionRequest)
 router.route('/user/getProfileOnUsername').get(getUserProfileBasedOnUsername)
 
-router.route('/add_testimonial').post(addTestimonial)
+router.route('/add_testimonial').post(requireAuth, addTestimonial)
 export default router;

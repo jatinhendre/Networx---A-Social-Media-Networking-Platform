@@ -5,116 +5,238 @@ import { useDispatch, useSelector } from 'react-redux';
 import { reset } from '@/config/redux/reducer/AuthReducer';
 import { getAboutUser } from '@/config/redux/action/AuthAction';
 import Image from 'next/image';
+import { Bell, CheckCheck, LogOut, Menu } from 'lucide-react';
+import {
+  getNotifications,
+  markAllNotificationsAsRead,
+  markNotificationAsRead,
+} from '@/config/redux/action/NotificationAction';
+import { resetNotifications } from '@/config/redux/reducer/NotificationReducer';
 
 function Navbar({ setIsSidebarOpen }) {
   const authState = useSelector((state) => state.auth);
+  const notificationState = useSelector((state) => state.notifications);
   const router = useRouter();
   const dispatch = useDispatch();
   const isLoggedIn = authState.loggedIn || authState.isTokenThere;
   const [isMoreOpen, setIsMoreOpen] = useState(false);
-  
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const latestNotifications = notificationState.list.slice(0, 5);
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     dispatch(reset());
+    dispatch(resetNotifications());
     router.push('/login');
     setIsMoreOpen(false);
+    setIsNotificationOpen(false);
+  };
+
+  const openProfile = async () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      await dispatch(getAboutUser({ token }));
+      router.push(`/view_profile/${authState.user?.username}`);
+    }
+  };
+
+  const openNotifications = () => {
+    setIsNotificationOpen((current) => !current);
+    setIsMoreOpen(false);
+
+    if (!isNotificationOpen) {
+      dispatch(getNotifications({ page: 1, limit: 10 }));
+    }
+  };
+
+  const getNotificationPath = (notification) => {
+    if (notification?.type === 'connection_request') {
+      return '/my_connections';
+    }
+
+    if (
+      notification?.type === 'like' ||
+      notification?.type === 'comment' ||
+      notification?.metadata?.postId
+    ) {
+      return '/dashboard';
+    }
+
+    return '/notifications';
+  };
+
+  const handleNotificationClick = async (notification) => {
+    if (!notification.read) {
+      await dispatch(markNotificationAsRead({ notificationId: notification._id }));
+    }
+
+    setIsNotificationOpen(false);
+    router.push(getNotificationPath(notification));
+  };
+
+  const handleMarkAllRead = () => {
+    dispatch(markAllNotificationsAsRead());
   };
 
   return (
     <div className={styles.container}>
       <nav>
-        {/* LEFT */}
         <div className={styles.left}>
           {isLoggedIn && (
             <button
               className={styles.mobileMenu}
               onClick={() => setIsSidebarOpen(true)}
+              title="Open menu"
+              aria-label="Open menu"
             >
-              ☰
+              <Menu size={22} />
             </button>
           )}
 
           <Image
-  src="/images/navbar_logo.png"
-  alt="Networx Logo"
-  width={140}
-  height={40}
-  priority
-  className={styles.logo}
-  onClick={() => router.push('/')}
-/>
+            src="/images/navbar_logo.png"
+            alt="Networx Logo"
+            width={140}
+            height={40}
+            priority
+            className={styles.logo}
+            onClick={() => router.push('/')}
+          />
         </div>
 
-        {/* RIGHT */}
         {isLoggedIn ? (
           <div className={styles.right}>
-            {/* Desktop */}
-            <p onClick={()=>{
-              router.push('/add_testimonial')
-            }} className={styles.navbarOptions}>Add a Testimonial</p>
-            <p onClick={()=>{
-              router.push('/all_testimonials');
-            }} className={styles.navbarOptions}>Testimonials</p>
             <p
+              onClick={() => router.push('/add_testimonial')}
               className={styles.navbarOptions}
-              onClick={async () => {
-                const token = localStorage.getItem('token');
-                if (token) {
-                  await dispatch(getAboutUser({ token }));
-                  router.push(`/view_profile/${authState.user?.username}`);
-                }
-              }}
             >
+              Add a Testimonial
+            </p>
+            <p
+              onClick={() => router.push('/all_testimonials')}
+              className={styles.navbarOptions}
+            >
+              Testimonials
+            </p>
+            <p className={styles.navbarOptions} onClick={openProfile}>
               Profile
             </p>
 
-            <div className={styles.logOutOption} onClick={handleLogout}>
-              <p className={styles.navbarOptions}>LogOut</p>
-              <svg
-                className={styles.icon}
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
+            <div className={styles.notificationWrapper}>
+              <button
+                className={styles.iconButton}
+                onClick={openNotifications}
+                title="Notifications"
+                aria-label="Notifications"
               >
-                <path d="m16 17 5-5-5-5" />
-                <path d="M21 12H9" />
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              </svg>
+                <Bell size={20} />
+                {notificationState.unreadCount > 0 && (
+                  <span className={styles.badge}>
+                    {notificationState.unreadCount > 99
+                      ? '99+'
+                      : notificationState.unreadCount}
+                  </span>
+                )}
+              </button>
+
+              {isNotificationOpen && (
+                <div className={styles.notificationDropdown}>
+                  <div className={styles.notificationHeader}>
+                    <span>Notifications</span>
+                    <button
+                      className={styles.markAllButton}
+                      onClick={handleMarkAllRead}
+                      title="Mark all as read"
+                      aria-label="Mark all notifications as read"
+                      disabled={notificationState.unreadCount === 0}
+                    >
+                      <CheckCheck size={16} />
+                    </button>
+                  </div>
+
+                  <div className={styles.notificationList}>
+                    {notificationState.isLoading && latestNotifications.length === 0 ? (
+                      <p className={styles.notificationStatus}>Loading...</p>
+                    ) : latestNotifications.length === 0 ? (
+                      <p className={styles.notificationStatus}>No notifications yet.</p>
+                    ) : (
+                      latestNotifications.map((notification) => (
+                        <button
+                          key={notification._id}
+                          className={`${styles.notificationItem} ${
+                            notification.read ? '' : styles.unreadNotification
+                          }`}
+                          onClick={() => handleNotificationClick(notification)}
+                        >
+                          <span>{notification.title}</span>
+                          <small>{notification.body}</small>
+                        </button>
+                      ))
+                    )}
+                  </div>
+
+                  <button
+                    className={styles.viewAllButton}
+                    onClick={() => {
+                      setIsNotificationOpen(false);
+                      router.push('/notifications');
+                    }}
+                  >
+                    View all
+                  </button>
+                </div>
+              )}
             </div>
 
-            {/* MOBILE */}
+            <div className={styles.logOutOption} onClick={handleLogout}>
+              <p className={styles.navbarOptions}>LogOut</p>
+              <LogOut className={styles.icon} size={20} />
+            </div>
+
             <div className={styles.moreWrapper}>
-              <p
+              <button
                 className={styles.moreText}
-                onClick={() => setIsMoreOpen(!isMoreOpen)}
+                onClick={() => {
+                  setIsMoreOpen(!isMoreOpen);
+                  setIsNotificationOpen(false);
+                }}
               >
-                More ▾
-              </p>
+                More
+              </button>
 
               {isMoreOpen && (
                 <div className={styles.moreDropdown}>
-                  <p  onClick={() => {
-    router.push('/add_testimonial');
-    setIsMoreOpen(false);
-  }}>Add a Testimonial</p>
-    <p onClick={()=>{
-      router.push('/all_testimonials');
-      setIsMoreOpen(false);
-    }}>Testimonials</p>
+                  <p
+                    onClick={() => {
+                      router.push('/add_testimonial');
+                      setIsMoreOpen(false);
+                    }}
+                  >
+                    Add a Testimonial
+                  </p>
+                  <p
+                    onClick={() => {
+                      router.push('/all_testimonials');
+                      setIsMoreOpen(false);
+                    }}
+                  >
+                    Testimonials
+                  </p>
+                  <p
+                    onClick={() => {
+                      router.push('/notifications');
+                      setIsMoreOpen(false);
+                    }}
+                  >
+                    Notifications
+                    {notificationState.unreadCount > 0
+                      ? ` (${notificationState.unreadCount})`
+                      : ''}
+                  </p>
                   <p
                     onClick={async () => {
-                      const token = localStorage.getItem('token');
-                      if (token) {
-                        await dispatch(getAboutUser({ token }));
-                        router.push(
-                          `/view_profile/${authState.user?.username}`
-                        );
-                        setIsMoreOpen(false);
-                      }
+                      await openProfile();
+                      setIsMoreOpen(false);
                     }}
                   >
                     Profile
@@ -139,3 +261,4 @@ function Navbar({ setIsSidebarOpen }) {
 }
 
 export default Navbar;
+

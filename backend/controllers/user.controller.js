@@ -7,6 +7,7 @@ import PDFDocument from 'pdfkit';
 import Connection from '../models/connections.model.js';
 import Testimonial from '../models/testimonials.model.js';
 import cloudinary from "../config/cloudinary.js";
+import { createNotification } from '../services/notifications.service.js';
 
 
 const convertUserDataToPDF = async(userProfile)=>{
@@ -222,6 +223,19 @@ export const connectionRequest = async(req, res) => {
         const newConnection = await Connection.findById(request._id)
             .populate('userId')
             .populate('connectionId');
+
+        await createNotification({
+            recipientUserId: connectionUser._id,
+            actorUserId: user._id,
+            type: 'connection_request',
+            entityType: 'Connection',
+            entityId: request._id,
+            title: 'New connection request',
+            body: `${user.name} sent you a connection request.`,
+            metadata: {
+                connectionId: request._id,
+            },
+        });
         
         return res.status(200).json({
             message: "Connection request sent successfully",
@@ -300,6 +314,19 @@ export const acceptConnectionRequest = async(req, res) => {
         }
         
         if (action_type === 'reject') {
+            await createNotification({
+                recipientUserId: connectionRequest.userId,
+                actorUserId: user._id,
+                type: 'connection_rejected',
+                entityType: 'Connection',
+                entityId: connectionRequest._id,
+                title: 'Connection request update',
+                body: `${user.name} declined your connection request.`,
+                metadata: {
+                    connectionId: connectionRequest._id,
+                },
+            });
+
             await Connection.deleteOne({_id: requestId});
             return res.status(200).json({
                 message: "Connection request rejected successfully!"
@@ -308,6 +335,19 @@ export const acceptConnectionRequest = async(req, res) => {
         
         connectionRequest.status_accepted = true;
         await connectionRequest.save();
+
+        await createNotification({
+            recipientUserId: connectionRequest.userId,
+            actorUserId: user._id,
+            type: 'connection_accepted',
+            entityType: 'Connection',
+            entityId: connectionRequest._id,
+            title: 'Connection request accepted',
+            body: `${user.name} accepted your connection request.`,
+            metadata: {
+                connectionId: connectionRequest._id,
+            },
+        });
         
         return res.status(200).json({
             message: "Connection request accepted successfully!"

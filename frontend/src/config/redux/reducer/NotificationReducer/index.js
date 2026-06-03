@@ -10,6 +10,7 @@ import {
 const initialState = {
   list: [],
   unreadCount: 0,
+  liveToasts: [],
   isLoading: false,
   isError: false,
   message: "",
@@ -38,11 +39,20 @@ const notificationSlice = createSlice({
       if (!exists) {
         state.list.unshift(notification);
         state.pagination.total += 1;
+        state.liveToasts.unshift(notification);
 
         if (!notification.read) {
           state.unreadCount += 1;
         }
       }
+    },
+    dismissLiveToast: (state, action) => {
+      state.liveToasts = state.liveToasts.filter(
+        (notification) => notification._id !== action.payload
+      );
+    },
+    clearLiveToasts: (state) => {
+      state.liveToasts = [];
     },
     setUnreadNotificationCount: (state, action) => {
       state.unreadCount = Number(action.payload) || 0;
@@ -122,6 +132,8 @@ const notificationSlice = createSlice({
 
 export const {
   addLiveNotification,
+  clearLiveToasts,
+  dismissLiveToast,
   resetNotifications,
   setUnreadNotificationCount,
 } = notificationSlice.actions;

@@ -1,6 +1,8 @@
 import { io } from "socket.io-client";
 
 let socket;
+const socketBaseURL =
+  process.env.NEXT_PUBLIC_BACKEND_URL || process.env.NEXT_PUBLIC_API_URL;
 
 export const getSocket = (token) => {
   if (!token) return null;
@@ -13,7 +15,7 @@ export const getSocket = (token) => {
     socket.disconnect();
   }
 
-  socket = io(process.env.NEXT_PUBLIC_API_URL, {
+  socket = io(socketBaseURL, {
     auth: { token },
     transports: ["websocket", "polling"],
   });
@@ -27,4 +29,3 @@ export const disconnectSocket = () => {
   socket.disconnect();
   socket = null;
 };
-

@@ -37,10 +37,12 @@ const conversationSlice = createSlice({
         (c) => c._id === action.payload._id
       );
       if (index !== -1) {
-        state.conversations[index] = {
+        const updatedConversation = {
           ...state.conversations[index],
           ...action.payload,
         };
+        state.conversations.splice(index, 1);
+        state.conversations.unshift(updatedConversation);
       }
     },
 

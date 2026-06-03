@@ -99,7 +99,7 @@
   }
 
   .chatWindow {
-    max-height: calc(100vh - 372px);
+    max-height: calc(100vh - 352px);
   }
 
   .chatHeader {

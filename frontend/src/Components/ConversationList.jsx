@@ -30,9 +30,11 @@ export default function ConversationList({ onSelectConversation }) {
     if (!conversation.lastMessage) return 'No messages yet';
     const message = conversation.lastMessage;
     const maxLength = 50;
-    return message.content?.substring(0, maxLength) + 
-      (message.content?.length > maxLength ? '...' : '') ||
-      'Attachment';
+    return (
+      message.content?.substring(0, maxLength) +
+        (message.content?.length > maxLength ? '...' : '') ||
+      'Attachment'
+    );
   };
 
   if (!conversations || conversations.length === 0) {
@@ -52,7 +54,9 @@ export default function ConversationList({ onSelectConversation }) {
         return (
           <div
             key={conversation._id}
-            className={styles.conversationItem}
+            className={`${styles.conversationItem} ${
+              conversation._id === router.query.id ? styles.activeConversation : ''
+            }`}
             onClick={() => handleSelectConversation(conversation)}
           >
             <img

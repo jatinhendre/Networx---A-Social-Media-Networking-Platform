@@ -10,6 +10,7 @@ import {
   addUnreadConversationId,
   clearUnreadConversationIds,
   removeUnreadConversationId,
+  updateConversation,
 } from "@/config/redux/reducer/ConversationReducer";
 import {
   getNotifications,
@@ -63,6 +64,14 @@ function NotificationSocketBridge() {
       if (!payload?.conversationId) {
         return;
       }
+
+      dispatch(
+        updateConversation({
+          _id: payload.conversationId,
+          lastMessage: payload.message,
+          lastMessageAt: payload.message?.createdAt,
+        })
+      );
 
       if (activeConversationId === payload.conversationId) {
         dispatch(removeUnreadConversationId(payload.conversationId));

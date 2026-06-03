@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Navbar from '@/Components/Navbar';
 import Footer from '@/Components/Footer';
 
-function UserLayout({ children }) {
+function UserLayout({ children, hideFooter = false }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
@@ -16,7 +16,7 @@ function UserLayout({ children }) {
           })
         : children}
 
-      <Footer />
+      {!hideFooter && <Footer />}
     </>
   );
 }

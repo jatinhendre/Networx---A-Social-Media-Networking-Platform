@@ -25,6 +25,10 @@
   align-items: flex-start;
 }
 
+.activeConversation {
+  background-color: #eff6ff;
+}
+
 .conversationItem:hover {
   background-color: #f9f9f9;
 }

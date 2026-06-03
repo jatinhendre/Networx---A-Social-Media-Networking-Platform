@@ -1,7 +1,9 @@
 .messagesPageContainer {
   display: flex;
-  height: 100vh;
+  height: calc(100vh - 72px);
+  min-height: calc(100vh - 72px);
   background-color: white;
+  overflow: hidden;
 }
 
 .sidebar {
@@ -10,6 +12,8 @@
   display: flex;
   flex-direction: column;
   background-color: #fff;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .header {
@@ -21,6 +25,85 @@
   margin: 0;
   font-size: 1.5rem;
   color: #333;
+}
+
+.searchContainer {
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid #ececec;
+}
+
+.searchInput {
+  width: 100%;
+  border: 1px solid #d8dee9;
+  border-radius: 14px;
+  padding: 0.75rem 0.9rem;
+  font-size: 0.95rem;
+  outline: none;
+  background: #f8fafc;
+}
+
+.searchInput:focus {
+  background: #fff;
+  border-color: #2563eb;
+}
+
+.quickConnections {
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid #ececec;
+}
+
+.quickConnections h3 {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  color: #111827;
+}
+
+.connectionItem {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  grid-template-areas:
+    'avatar name'
+    'avatar handle';
+  gap: 0.1rem 0.7rem;
+  align-items: center;
+  padding: 0.75rem;
+  border: 1px solid #eef2f7;
+  border-radius: 14px;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+  margin-bottom: 0.6rem;
+}
+
+.connectionItem:hover {
+  background: #f8fafc;
+}
+
+.connectionAvatar {
+  grid-area: avatar;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.connectionName {
+  grid-area: name;
+  font-weight: 600;
+  color: #111827;
+}
+
+.connectionHandle {
+  grid-area: handle;
+  color: #6b7280;
+  font-size: 0.84rem;
+}
+
+.emptyConnections {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.92rem;
 }
 
 .loadingState {
@@ -37,6 +120,7 @@
   align-items: center;
   justify-content: center;
   background-color: #fafafa;
+  min-height: 0;
 }
 
 .emptyState {
@@ -47,14 +131,15 @@
 @media (max-width: 768px) {
   .messagesPageContainer {
     flex-direction: column;
-    height: auto;
-    min-height: 100vh;
+    height: calc(100vh - 72px);
+    min-height: calc(100vh - 72px);
   }
 
   .sidebar {
     width: 100%;
     border-right: none;
     border-bottom: 1px solid #e0e0e0;
+    max-height: 320px;
   }
 
   .mainContent {

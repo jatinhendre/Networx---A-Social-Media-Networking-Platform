@@ -10,7 +10,10 @@ import {
   setIsSuccess,
   setMessage as setMessageState,
 } from "../../reducer/MessageReducer";
-import { removeUnreadConversationId } from "../../reducer/ConversationReducer";
+import {
+  removeUnreadConversationId,
+  updateConversation,
+} from "../../reducer/ConversationReducer";
 import { clientServer } from "@/config";
 
 // Fetch messages for a conversation
@@ -56,6 +59,13 @@ export const sendMessage = (conversationId, content) => async (dispatch) => {
     );
 
     dispatch(addMessage(response.data.data));
+    dispatch(
+      updateConversation({
+        _id: conversationId,
+        lastMessage: response.data.data,
+        lastMessageAt: response.data.data.createdAt,
+      })
+    );
     dispatch(setIsSuccess(true));
     return response.data.data;
   } catch (error) {

@@ -1,0 +1,95 @@
+.conversationListContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-right: 1px solid #e0e0e0;
+}
+
+.emptyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #999;
+  text-align: center;
+  padding: 1rem;
+}
+
+.conversationItem {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  align-items: flex-start;
+}
+
+.conversationItem:hover {
+  background-color: #f9f9f9;
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.conversationInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.name {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #333;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.time {
+  font-size: 0.85rem;
+  color: #999;
+  flex-shrink: 0;
+}
+
+.preview {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 768px) {
+  .conversationListContainer {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .conversationItem {
+    padding: 0.75rem;
+  }
+
+  .avatar {
+    width: 40px;
+    height: 40px;
+  }
+}

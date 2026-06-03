@@ -10,6 +10,7 @@ import {
   getAboutUser,
   getConnectionStatus,
 } from "@/config/redux/action/AuthAction";
+import { findOrCreateConversation } from "@/config/redux/action/ConversationAction";
 import Image from "next/image";
 
 function ViewProfile({ username, profile }) {
@@ -68,6 +69,19 @@ function ViewProfile({ username, profile }) {
     }
   };
 
+  const handleMessage = async () => {
+    try {
+      const conversation = await dispatch(
+        findOrCreateConversation(profile.userId._id)
+      );
+      if (conversation) {
+        router.push(`/messages/${conversation._id}`);
+      }
+    } catch (error) {
+      console.error("Message error:", error);
+    }
+  };
+
   if (!profile) {
     return (
       <UserLayout>
@@ -115,7 +129,12 @@ function ViewProfile({ username, profile }) {
               ) : (
                 <>
                   {connectionStatus === "connected" && (
-                    <button className={styles.connectedBtn} disabled>Connected</button>
+                    <>
+                      <button className={styles.connectedBtn} disabled>Connected</button>
+                      <button className={styles.messageBtn} onClick={handleMessage}>
+                        Message
+                      </button>
+                    </>
                   )}
 
                   {connectionStatus === "pending_sent" && (

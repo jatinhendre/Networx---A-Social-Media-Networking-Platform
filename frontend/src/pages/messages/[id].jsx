@@ -1,0 +1,135 @@
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useRouter } from 'next/router';
+import UserLayout from '@/pages/layouts/UserLayout';
+import ConversationList from '@/Components/ConversationList';
+import MessageList from '@/Components/MessageList';
+import MessageComposer from '@/Components/MessageComposer';
+import {
+  fetchMessages,
+  clearMessages,
+} from '@/config/redux/action/MessageAction';
+import { markConversationAsRead } from '@/config/redux/action/MessageAction';
+import { getSocket } from '@/config/socket';
+import styles from './conversation.module.css';
+
+export default function ConversationPage() {
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const { id } = router.query;
+  const { isTokenThere, token, user: currentUser } = useSelector(
+    (state) => state.auth
+  );
+  const { conversations, currentConversation } = useSelector(
+    (state) => state.conversations
+  );
+  const { messages, isLoading } = useSelector((state) => state.messages);
+
+  useEffect(() => {
+    if (!isTokenThere) {
+      router.push('/login');
+      return;
+    }
+  }, [isTokenThere]);
+
+  // Load messages when conversation ID changes
+  useEffect(() => {
+    if (id && isTokenThere) {
+      dispatch(fetchMessages(id));
+      dispatch(markConversationAsRead(id));
+    }
+  }, [id, isTokenThere, dispatch]);
+
+  // Setup Socket.IO listeners
+  useEffect(() => {
+    if (!id || !isTokenThere || !token) return;
+
+    const socket = getSocket(token);
+    if (!socket) return;
+
+    // Join conversation room
+    socket.emit('join_conversations');
+
+    // Listen for new messages
+    const handleMessageReceived = (data) => {
+      if (data.conversationId === id) {
+        dispatch({ type: 'message/addMessage', payload: data.message });
+      }
+    };
+
+    // Listen for read receipts
+    const handleMessagesRead = (data) => {
+      if (data.conversationId === id) {
+        dispatch({
+          type: 'message/markMessagesAsRead',
+          payload: data.readBy,
+        });
+      }
+    };
+
+    socket.on('message_received', handleMessageReceived);
+    socket.on('messages_read', handleMessagesRead);
+
+    return () => {
+      socket.off('message_received', handleMessageReceived);
+      socket.off('messages_read', handleMessagesRead);
+    };
+  }, [id, isTokenThere, token, dispatch]);
+
+  if (!isTokenThere) {
+    return null;
+  }
+
+  const otherUser = currentConversation?.participants?.find(
+    (p) => p._id !== currentUser?._id
+  );
+
+  return (
+    <UserLayout>
+      <div className={styles.conversationPageContainer}>
+        <div className={styles.sidebar}>
+          <div className={styles.header}>
+            <h1>Messages</h1>
+          </div>
+          <ConversationList />
+        </div>
+        <div className={styles.chatWindow}>
+          {id && currentConversation ? (
+            <>
+              <div className={styles.chatHeader}>
+                {otherUser && (
+                  <>
+                    <img
+                      src={otherUser.profilePicture || '/images/default-avatar.png'}
+                      alt={otherUser.username}
+                      className={styles.avatar}
+                    />
+                    <div className={styles.userInfo}>
+                      <h2>{otherUser.name}</h2>
+                      <p>@{otherUser.username}</p>
+                    </div>
+                  </>
+                )}
+              </div>
+              {isLoading ? (
+                <div className={styles.loadingState}>Loading messages...</div>
+              ) : (
+                <MessageList conversationId={id} />
+              )}
+              <MessageComposer
+                conversationId={id}
+                onMessageSent={(message) => {
+                  // Handle message sent via Socket.IO in the effect
+                }}
+              />
+            </>
+          ) : (
+            <div className={styles.emptyState}>
+              <p>Select a conversation to start messaging</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </UserLayout>
+  );
+}

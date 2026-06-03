@@ -71,6 +71,24 @@
   cursor: not-allowed;
 }
 
+.messageBtn {
+  padding: 0.45rem 1.2rem;
+  background-color: #4a90e2;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.25s ease, transform 0.2s ease;
+  margin-left: 0.5rem;
+}
+
+.messageBtn:hover {
+  background-color: #357abd;
+  transform: scale(1.03);
+}
+
 .editBtn {
   background-color: #f3f3f3;
   color: #333;

@@ -8,6 +8,7 @@ import http from 'http'
 import postRoutes from './routes/posts.routes.js'
 import userRoutes from './routes/users.routes.js'
 import notificationRoutes from './routes/notifications.routes.js'
+import conversationRoutes from './routes/conversations.routes.js'
 import { initializeSocket } from './utils/socket.js'
 
 const app = express()
@@ -32,6 +33,7 @@ app.use(express.static('uploads'))
 app.use(postRoutes)
 app.use(userRoutes)
 app.use(notificationRoutes)
+app.use(conversationRoutes)
 
 const start = async () => {
   try {

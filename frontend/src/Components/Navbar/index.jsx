@@ -10,7 +10,7 @@ import {
   getMyConnections,
 } from '@/config/redux/action/AuthAction';
 import Image from 'next/image';
-import { Bell, CheckCheck, LogOut, Menu } from 'lucide-react';
+import { Bell, CheckCheck, LogOut, Menu, MessageCircle } from 'lucide-react';
 import {
   getNotifications,
   markAllNotificationsAsRead,
@@ -252,6 +252,15 @@ function Navbar({ setIsSidebarOpen }) {
               )}
             </div>
 
+            <button
+              className={styles.iconButton}
+              onClick={() => router.push('/messages')}
+              title="Messages"
+              aria-label="Messages"
+            >
+              <MessageCircle size={20} />
+            </button>
+
             <div className={styles.logOutOption} onClick={handleLogout}>
               <p className={styles.navbarOptions}>LogOut</p>
               <LogOut className={styles.icon} size={20} />
@@ -296,6 +305,14 @@ function Navbar({ setIsSidebarOpen }) {
                     {notificationState.unreadCount > 0
                       ? ` (${notificationState.unreadCount})`
                       : ''}
+                  </p>
+                  <p
+                    onClick={() => {
+                      router.push('/messages');
+                      setIsMoreOpen(false);
+                    }}
+                  >
+                    Messages
                   </p>
                   <p
                     onClick={async () => {

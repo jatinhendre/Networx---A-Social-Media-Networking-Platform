@@ -1,0 +1,63 @@
+.messagesPageContainer {
+  display: flex;
+  height: 100vh;
+  background-color: white;
+}
+
+.sidebar {
+  width: 320px;
+  border-right: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+}
+
+.header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.loadingState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  color: #999;
+}
+
+.mainContent {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fafafa;
+}
+
+.emptyState {
+  color: #999;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .messagesPageContainer {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .mainContent {
+    display: none;
+  }
+}

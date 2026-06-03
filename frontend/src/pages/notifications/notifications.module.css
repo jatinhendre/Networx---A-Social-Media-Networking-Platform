@@ -112,6 +112,32 @@
   font-size: 0.88rem;
 }
 
+.requestActions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+}
+
+.acceptButton,
+.rejectButton {
+  min-height: 34px;
+  padding: 0 0.85rem;
+  border: none;
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.acceptButton {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.rejectButton {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
 .actions {
   display: flex;
   align-items: center;
@@ -175,4 +201,3 @@
     justify-content: flex-end;
   }
 }
-

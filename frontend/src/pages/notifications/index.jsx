@@ -4,6 +4,11 @@ import { Check, CheckCheck, Trash2 } from 'lucide-react';
 import UserLayout from '../layouts/UserLayout';
 import DashboardLayout from '../layouts/DashboardLayout';
 import {
+  acceptConnectionRequest,
+  getConnectionRequests,
+  getMyConnections,
+} from '@/config/redux/action/AuthAction';
+import {
   deleteNotification,
   getNotifications,
   markAllNotificationsAsRead,
@@ -41,6 +46,30 @@ function NotificationsPage() {
         limit: notificationState.pagination.limit,
       })
     );
+  };
+
+  const handleConnectionRequestAction = async (notification, actionType) => {
+    const token = localStorage.getItem('token');
+    const requestId = notification?.metadata?.connectionId || notification?.entityId;
+
+    if (!token || !requestId) {
+      return;
+    }
+
+    await dispatch(
+      acceptConnectionRequest({
+        token,
+        requestId,
+        action_type: actionType,
+      })
+    );
+
+    await dispatch(markNotificationAsRead({ notificationId: notification._id }));
+    await Promise.all([
+      dispatch(getNotifications({ page: 1, limit: notificationState.pagination.limit })),
+      dispatch(getConnectionRequests({ token })),
+      dispatch(getMyConnections({ token })),
+    ]);
   };
 
   return (
@@ -89,6 +118,26 @@ function NotificationsPage() {
                     <p>{notification.body}</p>
                     {notification.actorUserId?.username && (
                       <span>@{notification.actorUserId.username}</span>
+                    )}
+                    {notification.type === 'connection_request' && !notification.read && (
+                      <div className={styles.requestActions}>
+                        <button
+                          className={styles.acceptButton}
+                          onClick={() =>
+                            handleConnectionRequestAction(notification, 'accept')
+                          }
+                        >
+                          Accept
+                        </button>
+                        <button
+                          className={styles.rejectButton}
+                          onClick={() =>
+                            handleConnectionRequestAction(notification, 'reject')
+                          }
+                        >
+                          Reject
+                        </button>
+                      </div>
                     )}
                   </div>
 
@@ -145,4 +194,3 @@ function NotificationsPage() {
 }
 
 export default NotificationsPage;
-

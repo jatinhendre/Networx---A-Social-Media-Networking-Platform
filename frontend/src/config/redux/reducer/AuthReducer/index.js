@@ -179,6 +179,13 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.message = action.payload.message || "Request processed successfully";
         state.isSuccess = true;
+        const requestId = action.meta.arg?.requestId;
+
+        if (requestId) {
+          state.connectionRequests = state.connectionRequests.filter(
+            (request) => request._id !== requestId
+          );
+        }
       })
       .addCase(acceptConnectionRequest.rejected, (state, action) => {
         state.isLoading = false;

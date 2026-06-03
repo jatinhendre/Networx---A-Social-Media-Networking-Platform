@@ -37,6 +37,11 @@ const notificationSlice = createSlice({
       const exists = state.list.some((item) => item._id === notification._id);
       if (!exists) {
         state.list.unshift(notification);
+        state.pagination.total += 1;
+
+        if (!notification.read) {
+          state.unreadCount += 1;
+        }
       }
     },
     setUnreadNotificationCount: (state, action) => {
@@ -122,4 +127,3 @@ export const {
 } = notificationSlice.actions;
 
 export default notificationSlice.reducer;
-

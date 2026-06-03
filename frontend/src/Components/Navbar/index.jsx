@@ -3,7 +3,12 @@ import styles from './styles.module.css';
 import { useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
 import { reset } from '@/config/redux/reducer/AuthReducer';
-import { getAboutUser } from '@/config/redux/action/AuthAction';
+import {
+  acceptConnectionRequest,
+  getAboutUser,
+  getConnectionRequests,
+  getMyConnections,
+} from '@/config/redux/action/AuthAction';
 import Image from 'next/image';
 import { Bell, CheckCheck, LogOut, Menu } from 'lucide-react';
 import {
@@ -76,6 +81,32 @@ function Navbar({ setIsSidebarOpen }) {
 
   const handleMarkAllRead = () => {
     dispatch(markAllNotificationsAsRead());
+  };
+
+  const handleConnectionRequestAction = async (event, notification, actionType) => {
+    event.stopPropagation();
+
+    const token = localStorage.getItem('token');
+    const requestId = notification?.metadata?.connectionId || notification?.entityId;
+
+    if (!token || !requestId) {
+      return;
+    }
+
+    await dispatch(
+      acceptConnectionRequest({
+        token,
+        requestId,
+        action_type: actionType,
+      })
+    );
+
+    await dispatch(markNotificationAsRead({ notificationId: notification._id }));
+    await Promise.all([
+      dispatch(getNotifications({ page: 1, limit: 10 })),
+      dispatch(getConnectionRequests({ token })),
+      dispatch(getMyConnections({ token })),
+    ]);
   };
 
   return (
@@ -161,16 +192,49 @@ function Navbar({ setIsSidebarOpen }) {
                       <p className={styles.notificationStatus}>No notifications yet.</p>
                     ) : (
                       latestNotifications.map((notification) => (
-                        <button
+                        <div
                           key={notification._id}
                           className={`${styles.notificationItem} ${
                             notification.read ? '' : styles.unreadNotification
                           }`}
-                          onClick={() => handleNotificationClick(notification)}
                         >
-                          <span>{notification.title}</span>
-                          <small>{notification.body}</small>
-                        </button>
+                          <button
+                            className={styles.notificationContentButton}
+                            onClick={() => handleNotificationClick(notification)}
+                          >
+                            <span>{notification.title}</span>
+                            <small>{notification.body}</small>
+                          </button>
+
+                          {notification.type === 'connection_request' && !notification.read && (
+                            <div className={styles.notificationActionRow}>
+                              <button
+                                className={styles.notificationAcceptButton}
+                                onClick={(event) =>
+                                  handleConnectionRequestAction(
+                                    event,
+                                    notification,
+                                    'accept'
+                                  )
+                                }
+                              >
+                                Accept
+                              </button>
+                              <button
+                                className={styles.notificationRejectButton}
+                                onClick={(event) =>
+                                  handleConnectionRequestAction(
+                                    event,
+                                    notification,
+                                    'reject'
+                                  )
+                                }
+                              >
+                                Reject
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       ))
                     )}
                   </div>
@@ -261,4 +325,3 @@ function Navbar({ setIsSidebarOpen }) {
 }
 
 export default Navbar;
-

@@ -21,6 +21,7 @@ import { resetNotifications } from '@/config/redux/reducer/NotificationReducer';
 function Navbar({ setIsSidebarOpen }) {
   const authState = useSelector((state) => state.auth);
   const notificationState = useSelector((state) => state.notifications);
+  const conversationState = useSelector((state) => state.conversations);
   const router = useRouter();
   const dispatch = useDispatch();
   const isLoggedIn = authState.loggedIn || authState.isTokenThere;
@@ -259,6 +260,13 @@ function Navbar({ setIsSidebarOpen }) {
               aria-label="Messages"
             >
               <MessageCircle size={20} />
+                {conversationState.unreadCount > 0 && (
+                  <span className={styles.badge}>
+                    {conversationState.unreadCount > 99
+                      ? '99+'
+                      : conversationState.unreadCount}
+                  </span>
+                )}
             </button>
 
             <div className={styles.logOutOption} onClick={handleLogout}>
@@ -313,6 +321,9 @@ function Navbar({ setIsSidebarOpen }) {
                     }}
                   >
                     Messages
+                    {conversationState.unreadCount > 0
+                      ? ` (${conversationState.unreadCount})`
+                      : ''}
                   </p>
                   <p
                     onClick={async () => {

@@ -10,6 +10,7 @@ import {
   setIsSuccess,
   setMessage as setMessageState,
 } from "../../reducer/MessageReducer";
+import { removeUnreadConversationId } from "../../reducer/ConversationReducer";
 import { clientServer } from "@/config";
 
 // Fetch messages for a conversation
@@ -76,6 +77,7 @@ export const markConversationAsRead =
       });
 
       dispatch(markMessagesAsRead(null));
+      dispatch(removeUnreadConversationId(conversationId));
     } catch (error) {
       console.error("Error marking as read:", error);
     }

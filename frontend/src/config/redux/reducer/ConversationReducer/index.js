@@ -8,6 +8,7 @@ const initialState = {
   isSuccess: false,
   message: "",
   unreadCount: 0,
+  unreadConversationIds: [],
 };
 
 const conversationSlice = createSlice({
@@ -56,14 +57,38 @@ const conversationSlice = createSlice({
       state.unreadCount = action.payload;
     },
 
-    incrementUnreadCount: (state) => {
-      state.unreadCount += 1;
+    setUnreadConversationIds: (state, action) => {
+      state.unreadConversationIds = Array.from(new Set(action.payload || []));
+      state.unreadCount = state.unreadConversationIds.length;
     },
 
-    decrementUnreadCount: (state) => {
-      if (state.unreadCount > 0) {
-        state.unreadCount -= 1;
+    addUnreadConversationId: (state, action) => {
+      const conversationId = action.payload;
+      if (!conversationId) {
+        return;
       }
+
+      if (!state.unreadConversationIds.includes(conversationId)) {
+        state.unreadConversationIds.push(conversationId);
+        state.unreadCount = state.unreadConversationIds.length;
+      }
+    },
+
+    removeUnreadConversationId: (state, action) => {
+      const conversationId = action.payload;
+      if (!conversationId) {
+        return;
+      }
+
+      state.unreadConversationIds = state.unreadConversationIds.filter(
+        (id) => id !== conversationId
+      );
+      state.unreadCount = state.unreadConversationIds.length;
+    },
+
+    clearUnreadConversationIds: (state) => {
+      state.unreadConversationIds = [];
+      state.unreadCount = 0;
     },
 
     // Loading states
@@ -97,8 +122,10 @@ export const {
   setCurrentConversation,
   clearCurrentConversation,
   setUnreadCount,
-  incrementUnreadCount,
-  decrementUnreadCount,
+  setUnreadConversationIds,
+  addUnreadConversationId,
+  removeUnreadConversationId,
+  clearUnreadConversationIds,
   setIsLoading,
   setIsError,
   setIsSuccess,

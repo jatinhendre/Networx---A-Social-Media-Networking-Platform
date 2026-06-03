@@ -2,10 +2,13 @@ import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './MessageList.module.css';
 
+const fallbackAvatar = '/default.jpg';
+
 export default function MessageList({ conversationId }) {
   const { messages } = useSelector((state) => state.messages);
   const { user: currentUser } = useSelector((state) => state.auth);
   const messageEndRef = useRef(null);
+  const currentUserId = currentUser?._id?.toString?.() || currentUser?._id;
 
   const scrollToBottom = () => {
     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -26,7 +29,8 @@ export default function MessageList({ conversationId }) {
   return (
     <div className={styles.messageListContainer}>
       {messages.map((message) => {
-        const isSentByCurrentUser = message.senderId._id === currentUser._id;
+        const isSentByCurrentUser =
+          Boolean(currentUserId) && message.senderId?._id === currentUserId;
 
         return (
           <div
@@ -38,9 +42,12 @@ export default function MessageList({ conversationId }) {
             {!isSentByCurrentUser && (
               <div className={styles.senderInfo}>
                 <img
-                  src={message.senderId.profilePicture || '/images/default-avatar.png'}
+                  src={message.senderId.profilePicture || fallbackAvatar}
                   alt={message.senderId.username}
                   className={styles.avatar}
+                  onError={(event) => {
+                    event.currentTarget.src = fallbackAvatar;
+                  }}
                 />
               </div>
             )}

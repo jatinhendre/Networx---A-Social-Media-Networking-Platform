@@ -4,6 +4,8 @@ import { useRouter } from 'next/router';
 import { setCurrentConversation } from '@/config/redux/reducer/ConversationReducer';
 import styles from './ConversationList.module.css';
 
+const fallbackAvatar = '/default.jpg';
+
 export default function ConversationList({ onSelectConversation }) {
   const { conversations } = useSelector((state) => state.conversations);
   const { user: currentUser } = useSelector((state) => state.auth);
@@ -54,9 +56,12 @@ export default function ConversationList({ onSelectConversation }) {
             onClick={() => handleSelectConversation(conversation)}
           >
             <img
-              src={otherUser.profilePicture || '/images/default-avatar.png'}
+              src={otherUser.profilePicture || fallbackAvatar}
               alt={otherUser.username}
               className={styles.avatar}
+              onError={(event) => {
+                event.currentTarget.src = fallbackAvatar;
+              }}
             />
             <div className={styles.conversationInfo}>
               <div className={styles.header}>

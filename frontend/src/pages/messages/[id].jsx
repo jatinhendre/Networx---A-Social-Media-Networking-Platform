@@ -7,11 +7,17 @@ import MessageList from '@/Components/MessageList';
 import MessageComposer from '@/Components/MessageComposer';
 import {
   fetchMessages,
-  clearMessages,
+  clearMessagesAction,
 } from '@/config/redux/action/MessageAction';
 import { markConversationAsRead } from '@/config/redux/action/MessageAction';
+import {
+  fetchConversations,
+} from '@/config/redux/action/ConversationAction';
+import { setCurrentConversation } from '@/config/redux/reducer/ConversationReducer';
 import { getSocket } from '@/config/socket';
 import styles from './conversation.module.css';
+
+const fallbackAvatar = '/default.jpg';
 
 export default function ConversationPage() {
   const router = useRouter();
@@ -24,6 +30,10 @@ export default function ConversationPage() {
     (state) => state.conversations
   );
   const { messages, isLoading } = useSelector((state) => state.messages);
+  const activeConversation =
+    currentConversation?._id === id
+      ? currentConversation
+      : conversations.find((conversation) => conversation._id === id) || null;
 
   useEffect(() => {
     if (!isTokenThere) {
@@ -35,10 +45,26 @@ export default function ConversationPage() {
   // Load messages when conversation ID changes
   useEffect(() => {
     if (id && isTokenThere) {
+      if (!conversations.length) {
+        dispatch(fetchConversations());
+      }
+
       dispatch(fetchMessages(id));
       dispatch(markConversationAsRead(id));
     }
-  }, [id, isTokenThere, dispatch]);
+  }, [id, isTokenThere, conversations.length, dispatch]);
+
+  useEffect(() => {
+    if (id && activeConversation && currentConversation?._id !== activeConversation._id) {
+      dispatch(setCurrentConversation(activeConversation));
+    }
+  }, [id, activeConversation, currentConversation?._id, dispatch]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearMessagesAction());
+    };
+  }, [dispatch]);
 
   // Setup Socket.IO listeners
   useEffect(() => {
@@ -80,8 +106,8 @@ export default function ConversationPage() {
     return null;
   }
 
-  const otherUser = currentConversation?.participants?.find(
-    (p) => p._id !== currentUser?._id
+  const otherUser = activeConversation?.participants?.find(
+    (participant) => participant._id !== currentUser?._id
   );
 
   return (
@@ -94,15 +120,18 @@ export default function ConversationPage() {
           <ConversationList />
         </div>
         <div className={styles.chatWindow}>
-          {id && currentConversation ? (
+          {id && activeConversation ? (
             <>
               <div className={styles.chatHeader}>
                 {otherUser && (
                   <>
                     <img
-                      src={otherUser.profilePicture || '/images/default-avatar.png'}
+                      src={otherUser.profilePicture || fallbackAvatar}
                       alt={otherUser.username}
                       className={styles.avatar}
+                      onError={(event) => {
+                        event.currentTarget.src = fallbackAvatar;
+                      }}
                     />
                     <div className={styles.userInfo}>
                       <h2>{otherUser.name}</h2>
@@ -116,12 +145,7 @@ export default function ConversationPage() {
               ) : (
                 <MessageList conversationId={id} />
               )}
-              <MessageComposer
-                conversationId={id}
-                onMessageSent={(message) => {
-                  // Handle message sent via Socket.IO in the effect
-                }}
-              />
+              <MessageComposer conversationId={id} />
             </>
           ) : (
             <div className={styles.emptyState}>

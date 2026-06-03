@@ -4,6 +4,7 @@ import {
   addConversation,
   setCurrentConversation,
   setUnreadCount,
+  setUnreadConversationIds,
   setIsLoading,
   setIsError,
   setIsSuccess,
@@ -75,6 +76,7 @@ export const fetchUnreadCount = () => async (dispatch) => {
     });
 
     dispatch(setUnreadCount(response.data.unreadCount));
+    dispatch(setUnreadConversationIds(response.data.unreadConversationIds || []));
   } catch (error) {
     console.error("Error fetching unread count:", error);
   }

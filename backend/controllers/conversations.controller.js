@@ -1,6 +1,7 @@
 import Conversation from '../models/conversations.model.js';
 import Message from '../models/messages.model.js';
 import User from '../models/users.model.js';
+import { emitToUser } from '../utils/socket.js';
 
 /**
  * Get all conversations for the current user
@@ -184,6 +185,22 @@ export const sendMessage = async (req, res) => {
     conversation.updatedAt = new Date();
     await conversation.save();
 
+    const otherParticipants = conversation.participants
+      .map((participant) => participant.toString())
+      .filter((participantId) => participantId !== userId.toString());
+
+    otherParticipants.forEach((participantId) => {
+      emitToUser(participantId, 'message_received', {
+        conversationId,
+        message: message.toObject(),
+      });
+
+      emitToUser(participantId, 'conversation_updated', {
+        conversationId,
+        lastMessage: message.toObject(),
+      });
+    });
+
     return res.status(201).json({
       message: 'Message sent successfully',
       data: message,
@@ -251,17 +268,40 @@ export const getUnreadCount = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    const unreadCount = await Message.countDocuments({
-      senderId: { $ne: userId },
-      isRead: false,
-      conversationId: {
-        $in: await Conversation.find({ participants: userId }).select('_id'),
+    const unreadConversationIds = await Message.aggregate([
+      {
+        $match: {
+          senderId: { $ne: userId },
+          isRead: false,
+        },
       },
-    });
+      {
+        $lookup: {
+          from: 'conversations',
+          localField: 'conversationId',
+          foreignField: '_id',
+          as: 'conversation',
+        },
+      },
+      {
+        $match: {
+          'conversation.participants': userId,
+        },
+      },
+      {
+        $group: {
+          _id: '$conversationId',
+        },
+      },
+      {
+        $sort: { _id: 1 },
+      },
+    ]);
 
     return res.status(200).json({
       message: 'Unread count fetched',
-      unreadCount,
+      unreadCount: unreadConversationIds.length,
+      unreadConversationIds: unreadConversationIds.map((item) => item._id),
     });
   } catch (error) {
     return res.status(500).json({

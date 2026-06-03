@@ -7,9 +7,15 @@ import {
   setUnreadNotificationCount,
 } from "@/config/redux/reducer/NotificationReducer";
 import {
+  addUnreadConversationId,
+  clearUnreadConversationIds,
+  removeUnreadConversationId,
+} from "@/config/redux/reducer/ConversationReducer";
+import {
   getNotifications,
   getUnreadNotificationCount,
 } from "@/config/redux/action/NotificationAction";
+import { fetchUnreadCount } from "@/config/redux/action/ConversationAction";
 
 function NotificationSocketBridge() {
   const dispatch = useDispatch();
@@ -24,16 +30,19 @@ function NotificationSocketBridge() {
     if (!isLoggedIn || !token) {
       disconnectSocket();
       dispatch(resetNotifications());
+      dispatch(clearUnreadConversationIds());
       return undefined;
     }
 
     dispatch(getUnreadNotificationCount());
+    dispatch(fetchUnreadCount());
 
     const socket = getSocket(token);
     if (!socket) return undefined;
 
     socket.on("connect", () => {
       dispatch(getUnreadNotificationCount());
+      dispatch(fetchUnreadCount());
       dispatch(getNotifications({ page: 1, limit: 10 }));
     });
 
@@ -45,10 +54,36 @@ function NotificationSocketBridge() {
       dispatch(setUnreadNotificationCount(unreadCount));
     });
 
+    socket.on("message_received", (payload) => {
+      const activePath = window.location.pathname || "";
+      const activeConversationId = activePath.startsWith("/messages/")
+        ? activePath.split("/")[2]
+        : null;
+
+      if (!payload?.conversationId) {
+        return;
+      }
+
+      if (activeConversationId === payload.conversationId) {
+        dispatch(removeUnreadConversationId(payload.conversationId));
+        return;
+      }
+
+      dispatch(addUnreadConversationId(payload.conversationId));
+    });
+
+    socket.on("messages_read", ({ conversationId }) => {
+      if (conversationId) {
+        dispatch(removeUnreadConversationId(conversationId));
+      }
+    });
+
     return () => {
       socket.off("connect");
       socket.off("notification:new");
       socket.off("notification:unread_count");
+      socket.off("message_received");
+      socket.off("messages_read");
     };
   }, [authState.loggedIn, authState.isTokenThere, authState.token, dispatch]);
 

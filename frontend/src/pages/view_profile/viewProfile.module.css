@@ -41,67 +41,122 @@
 
 .buttonWrapper {
   margin-left: auto;
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
 }
 
 .connectBtn {
-  padding: 0.45rem 1.2rem;
-  background-color: #0073b1;
-  color: #fff;
+  padding: 0.55rem 1.4rem;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: #ffffff;
   border: none;
-  border-radius: 20px;
+  border-radius: 24px;
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.25s ease, transform 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2), 0 2px 4px -1px rgba(37, 99, 235, 0.1);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .connectBtn:hover {
-  background-color: #005f8d;
-  transform: scale(1.03);
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px -2px rgba(37, 99, 235, 0.3), 0 3px 6px -2px rgba(37, 99, 235, 0.2);
+}
+
+.connectBtn:active {
+  transform: translateY(0);
 }
 
 .connectedBtn {
-  padding: 0.45rem 1.2rem;
-  background-color: #e4e6eb;
-  color: #555;
-  border: 1px solid #ccc;
-  border-radius: 20px;
+  padding: 0.55rem 1.4rem;
+  background-color: #f0fdf4;
+  color: #16a34a;
+  border: 1.5px solid #bbf7d0;
+  border-radius: 24px;
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: not-allowed;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+}
+
+.requestSentBtn {
+  padding: 0.55rem 1.4rem;
+  background-color: #eff6ff;
+  color: #2563eb;
+  border: 1.5px solid #bfdbfe;
+  border-radius: 24px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: not-allowed;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
 }
 
 .messageBtn {
-  padding: 0.45rem 1.2rem;
-  background-color: #4a90e2;
-  color: #fff;
-  border: none;
-  border-radius: 20px;
+  padding: 0.55rem 1.4rem;
+  background-color: #ffffff;
+  color: #4b5563;
+  border: 1.5px solid #d1d5db;
+  border-radius: 24px;
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.25s ease, transform 0.2s ease;
-  margin-left: 0.5rem;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
 }
 
 .messageBtn:hover {
-  background-color: #357abd;
-  transform: scale(1.03);
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+  color: #1f2937;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.messageBtn:active {
+  transform: translateY(0);
 }
 
 .editBtn {
-  background-color: #f3f3f3;
-  color: #333;
-  border: 1px solid #ccc;
-  padding: 8px 20px;
-  border-radius: 20px;
-  cursor: pointer;
+  padding: 0.55rem 1.4rem;
+  background-color: #ffffff;
+  color: #4b5563;
+  border: 1.5px solid #d1d5db;
+  border-radius: 24px;
+  font-size: 0.9rem;
   font-weight: 600;
-  transition: background 0.3s;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
 }
 
 .editBtn:hover {
-  background-color: #e0e0e0;
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+  color: #1f2937;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.editBtn:active {
+  transform: translateY(0);
 }
 
 .meBadge {
@@ -237,11 +292,16 @@
   .buttonWrapper {
     margin-left: 0;
     display: flex;
+    gap: 0.5rem;
+    width: 100%;
   }
 
   .connectBtn,
   .connectedBtn,
+  .requestSentBtn,
+  .messageBtn,
   .editBtn {
+    flex: 1;
     width: 100%;
     padding: 0.6rem;
     font-size: 0.95rem;

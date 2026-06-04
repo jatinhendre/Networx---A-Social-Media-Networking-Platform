@@ -43,6 +43,27 @@
 
 .closeBtn {
   display: none;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  color: #4b5563;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.closeBtn:hover {
+  background: #e5e7eb;
+  color: #1f2937;
+  transform: scale(1.05);
+}
+
+.closeBtn:active {
+  transform: scale(0.95);
 }
 
 .recentProfiles {
@@ -199,8 +220,8 @@
   }
 
   .closeBtn {
-    display: block;
-    margin-bottom: 1rem;
+    display: flex;
+    margin-bottom: 1.25rem;
   }
 
   .homeContainer_right {

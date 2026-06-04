@@ -5,7 +5,6 @@ import {
   getAllTestimonials,
   getAllTestimonialsForPage,
   getComments,
-  incrementLikes,
   postComment,
   postTestimonial,
   toggleLike,

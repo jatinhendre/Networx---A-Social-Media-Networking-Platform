@@ -10,7 +10,10 @@ import {
   getAboutUser,
   getConnectionStatus,
 } from "@/config/redux/action/AuthAction";
+import { findOrCreateConversation } from "@/config/redux/action/ConversationAction";
 import Image from "next/image";
+import { User, Briefcase, GraduationCap, Award, Activity, MessageSquare, Plus, Mail, MessageCircle, Edit2, Calendar } from "lucide-react";
+import Lightbox from "../../Components/Lightbox";
 
 function ViewProfile({ username, profile }) {
   const router = useRouter();
@@ -20,6 +23,7 @@ function ViewProfile({ username, profile }) {
   const postState = useSelector((state) => state.post);
 
   const [connectionStatus, setConnectionStatus] = useState("none");
+  const [activeImage, setActiveImage] = useState(null);
 
   // Check if this profile belongs to the logged-in user
   const isMyProfile = authState.user?._id === profile?.userId?._id;
@@ -68,6 +72,19 @@ function ViewProfile({ username, profile }) {
     }
   };
 
+  const handleMessage = async () => {
+    try {
+      const conversation = await dispatch(
+        findOrCreateConversation(profile.userId._id)
+      );
+      if (conversation) {
+        router.push(`/messages/${conversation._id}`);
+      }
+    } catch (error) {
+      console.error("Message error:", error);
+    }
+  };
+
   if (!profile) {
     return (
       <UserLayout>
@@ -84,138 +101,218 @@ function ViewProfile({ username, profile }) {
     <UserLayout>
       <DashboardLayout>
         <div className={styles.container}>
-          <div className={styles.header}>
-            <Image
-              src={
-              userId?.profilePicture &&
-    userId.profilePicture !== ""
-      ? userId.profilePicture
-      : "/default.jpg"
-              }
-              alt="Profile"
-              className={styles.avatar}
-              width={40}
-              height={40}
-            />
-
-            <div className={styles.headerInfo}>
-              <h2>{userId.name} {isMyProfile && <span className={styles.meBadge}>(You)</span>}</h2>
-              <p className={styles.username}>@{userId.username}</p>
-              {bio && <p className={styles.bio}>{bio}</p>}
+          <div className={styles.profileHeader}>
+            <div
+              className={styles.coverPhoto}
+              onClick={() => userId?.coverPicture && setActiveImage(userId.coverPicture)}
+              style={{ cursor: userId?.coverPicture ? "pointer" : "default" }}
+            >
+              {userId?.coverPicture && userId.coverPicture !== "" ? (
+                <Image
+                  src={userId.coverPicture}
+                  alt="Cover Photo"
+                  className={styles.coverImage}
+                  width={800}
+                  height={140}
+                  priority
+                  unoptimized
+                />
+              ) : null}
             </div>
+            <div className={styles.headerContent}>
+              <div
+                className={styles.avatarWrapper}
+                onClick={() => userId?.profilePicture && setActiveImage(userId.profilePicture)}
+                style={{ cursor: userId?.profilePicture ? "pointer" : "default" }}
+              >
+                <Image
+                  src={
+                    userId?.profilePicture && userId.profilePicture !== ""
+                      ? userId.profilePicture
+                      : "/default.jpg"
+                  }
+                  alt="Profile Avatar"
+                  className={styles.avatar}
+                  width={110}
+                  height={110}
+                  unoptimized
+                />
+              </div>
 
-            <div className={styles.buttonWrapper}>
-              {isMyProfile ? (
-                <button 
-                  className={styles.editBtn} 
-                  onClick={() => router.push("/edit_profile")}
-                >
-                  Edit Profile
-                </button>
-              ) : (
-                <>
-                  {connectionStatus === "connected" && (
-                    <button className={styles.connectedBtn} disabled>Connected</button>
+              <div className={styles.headerMain}>
+                <div className={styles.headerInfo}>
+                  <h2>
+                    {userId.name}{" "}
+                    {isMyProfile && <span className={styles.meBadge}>(You)</span>}
+                  </h2>
+                  <p className={styles.username}>@{userId.username}</p>
+                  {currentPost && (
+                    <p className={styles.headline}>
+                      <Briefcase size={14} style={{ marginRight: "4px" }} /> {currentPost}
+                    </p>
                   )}
+                </div>
 
-                  {connectionStatus === "pending_sent" && (
-                    <button className={styles.requestSentBtn} disabled>Request Sent</button>
-                  )}
-
-                  {connectionStatus === "pending_received" && (
+                <div className={styles.buttonWrapper}>
+                  {isMyProfile ? (
                     <button
-                      className={styles.connectBtn}
-                      onClick={() => router.push("/my_connections")}
+                      className={styles.editBtn}
+                      onClick={() => router.push("/edit_profile")}
                     >
-                      Review Request
+                      <Edit2 size={14} style={{ marginRight: "6px" }} /> Edit Profile
                     </button>
-                  )}
+                  ) : (
+                    <>
+                      {connectionStatus === "connected" && (
+                        <>
+                          <button className={styles.connectedBtn} disabled>
+                            Connected
+                          </button>
+                          <button className={styles.messageBtn} onClick={handleMessage}>
+                            <MessageCircle size={14} style={{ marginRight: "6px" }} /> Message
+                          </button>
+                        </>
+                      )}
 
-                  {connectionStatus === "none" && (
-                    <button className={styles.connectBtn} onClick={handleConnect}>
-                      Connect
-                    </button>
+                      {connectionStatus === "pending_sent" && (
+                        <button className={styles.requestSentBtn} disabled>
+                          Request Sent
+                        </button>
+                      )}
+
+                      {connectionStatus === "pending_received" && (
+                        <button
+                          className={styles.connectBtn}
+                          onClick={() => router.push("/my_connections")}
+                        >
+                          Review Request
+                        </button>
+                      )}
+
+                      {connectionStatus === "none" && (
+                        <button className={styles.connectBtn} onClick={handleConnect}>
+                          <Plus size={14} style={{ marginRight: "6px" }} /> Connect
+                        </button>
+                      )}
+                    </>
                   )}
-                </>
-              )}
+                </div>
+              </div>
             </div>
           </div>
-{bio && (
-  <div className={styles.section}>
-    <h3>Bio</h3>
 
-    <div className={styles.infoCard}>
-      <p>{bio}</p>
-    </div>
-  </div>
-)}
-
-<div className={styles.section}>
-  <h3>Current Work</h3>
-
-  <div className={styles.infoCard}>
-    <p>{currentPost || "Not specified"}</p>
-  </div>
-</div>
-
+          {bio && (
+            <div className={styles.section}>
+              <h3>
+                <User size={18} /> Bio
+              </h3>
+              <div className={styles.infoCard}>
+                <p>{bio}</p>
+              </div>
+            </div>
+          )}
 
           <div className={styles.section}>
-  <h3>Education</h3>
-
-  {education && education.length > 0 ? (
-    education.map((edu) => (
-      <div key={edu._id} className={styles.educationCard}>
-        <p><strong>School:</strong> {edu.school || "—"}</p>
-        <p><strong>Degree:</strong> {edu.degree || "—"}</p>
-        <p><strong>Field:</strong> {edu.fieldOfStudy || "—"}</p>
-      </div>
-    ))
-  ) : (
-    <p className={styles.empty}>No education added</p>
-  )}
-</div>
-
-<div className={styles.section}>
-  <h3>Work Experience</h3>
-
-  {pastWork && pastWork.length > 0 ? (
-    pastWork.map((work) => (
-      <div key={work._id} className={styles.workCard}>
-        <p><strong>Company:</strong> {work.company || "—"}</p>
-        <p><strong>Position:</strong> {work.position || "—"}</p>
-        <p><strong>Years:</strong> {work.years || "—"}</p>
-      </div>
-    ))
-  ) : (
-    <p className={styles.empty}>No work experience added</p>
-  )}
-</div>
+            <h3>
+              <Award size={18} /> Current Work
+            </h3>
+            <div className={styles.infoCard}>
+              <p>{currentPost || "No current work position specified"}</p>
+            </div>
+          </div>
 
           <div className={styles.section}>
-            <h3>Recent Activity</h3>
-            {userPosts.length > 0 ? (
-              userPosts.map((post) => (
-                <div key={post._id} className={styles.activityCard}>
-                  {post.media && (
-                    <Image
-                      src={post.media}
-                      alt="post media"
-                      className={styles.activityImage}
-                      width={40}
-                    height={40}
-                    />
-                  )}
-                  <div className={styles.activityContent}>
-                    <p className={styles.postText}>{post.body}</p>
-                    <span className={styles.postDate}>
-                      {new Date(post.createdAt).toLocaleDateString()}
-                    </span>
+            <h3>
+              <GraduationCap size={18} /> Education
+            </h3>
+            {education && education.length > 0 ? (
+              <div className={styles.timeline}>
+                {education.map((edu) => (
+                  <div key={edu._id} className={styles.timelineItem}>
+                    <div className={styles.timelineDot}>
+                      <GraduationCap size={14} />
+                    </div>
+                    <div className={styles.timelineContent}>
+                      <h4 className={styles.timelineTitle}>
+                        {edu.degree} in {edu.fieldOfStudy}
+                      </h4>
+                      <p className={styles.timelineSubtitle}>{edu.school}</p>
+                    </div>
                   </div>
-                </div>
-              ))
+                ))}
+              </div>
             ) : (
-              <p className={styles.empty}>No recent activity</p>
+              <p className={styles.empty}>No education added yet</p>
             )}
+          </div>
+
+          <div className={styles.section}>
+            <h3>
+              <Briefcase size={18} /> Work Experience
+            </h3>
+            {pastWork && pastWork.length > 0 ? (
+              <div className={styles.timeline}>
+                {pastWork.map((work) => (
+                  <div key={work._id} className={styles.timelineItem}>
+                    <div className={styles.timelineDot}>
+                      <Briefcase size={14} />
+                    </div>
+                    <div className={styles.timelineContent}>
+                      <h4 className={styles.timelineTitle}>{work.position}</h4>
+                      <p className={styles.timelineSubtitle}>{work.company}</p>
+                      <span className={styles.timelineDate}>
+                        <Calendar size={12} style={{ marginRight: "4px", verticalAlign: "middle" }} />
+                        {work.years}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className={styles.empty}>No work experience added yet</p>
+            )}
+          </div>
+
+          <div className={styles.section}>
+            <h3>
+              <Activity size={18} /> Recent Activity
+            </h3>
+            {userPosts.length > 0 ? (
+              <div className={styles.activityList}>
+                {userPosts.map((post) => (
+                  <div key={post._id} className={styles.activityCard}>
+                    {post.media && (
+                      <div
+                        className={styles.activityImageWrapper}
+                        onClick={() => setActiveImage(post.media)}
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Image
+                          src={post.media}
+                          alt="post media"
+                          className={styles.activityImage}
+                          width={70}
+                          height={70}
+                          unoptimized
+                        />
+                      </div>
+                    )}
+                    <div className={styles.activityContent}>
+                      <p className={styles.postText}>{post.body}</p>
+                      <span className={styles.postDate}>
+                        <Calendar size={12} style={{ marginRight: "4px", verticalAlign: "middle" }} />
+                        {new Date(post.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className={styles.empty}>No recent activity found</p>
+            )}
+          {activeImage && (
+            <Lightbox src={activeImage} onClose={() => setActiveImage(null)} />
+          )}
           </div>
         </div>
       </DashboardLayout>

@@ -156,13 +156,22 @@ const authSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(sendConnectionRequest.fulfilled, (state, action) => {
-  state.isLoading = false;
-  state.message = "Connection request sent successfully";
-  state.isSuccess = true;
-  if (action.payload && action.payload.connection) {
-    state.connections.push(action.payload.connection);
-  }
-})
+        state.isLoading = false;
+        state.message = "Connection request sent successfully";
+        state.isSuccess = true;
+        if (action.payload && action.payload.connection) {
+          state.connections.push(action.payload.connection);
+        }
+        const connectionId = action.meta.arg?.connectionId;
+        if (connectionId && state.allUsers) {
+          const userIndex = state.allUsers.findIndex(
+            (u) => u.userId?._id === connectionId
+          );
+          if (userIndex !== -1) {
+            state.allUsers[userIndex].connectionStatus = "pending_sent";
+          }
+        }
+      })
       .addCase(sendConnectionRequest.rejected, (state, action) => {
         state.isLoading = false;
         const payload = action.payload;
@@ -179,6 +188,13 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.message = action.payload.message || "Request processed successfully";
         state.isSuccess = true;
+        const requestId = action.meta.arg?.requestId;
+
+        if (requestId) {
+          state.connectionRequests = state.connectionRequests.filter(
+            (request) => request._id !== requestId
+          );
+        }
       })
       .addCase(acceptConnectionRequest.rejected, (state, action) => {
         state.isLoading = false;

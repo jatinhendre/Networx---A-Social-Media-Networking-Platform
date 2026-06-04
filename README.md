@@ -209,25 +209,6 @@ I'm excited about these upcoming features:
 
 ---
 
-## 🙏 Acknowledgments
-
-This project wouldn't be possible without:
-- The amazing open-source community
-- Next.js and React teams
-- MongoDB and Cloudinary for their excellent documentation
-- Everyone who's tested and provided feedback
-
----
-
-## 👨‍💻 About the Developer
-
-**Jatin Hendre**
-
-I'm a full-stack developer passionate about building tools that bring people together. Networx started as a learning project and evolved into something I'm really proud of. I'm always open to feedback, collaboration, and new ideas!
-
-Feel free to reach out if you have questions, suggestions, or just want to connect.
-
----
 
 
 ## 🤝 Contributing

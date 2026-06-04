@@ -8,7 +8,7 @@ export default function Home() {
   const router = useRouter();
 
   return (
-    <UserLayout>
+    <UserLayout hideFooter={false}>
       <section className={styles.heroWrapper}>
         <div className={styles.hero}>
           <div className={styles.heroLeft}>

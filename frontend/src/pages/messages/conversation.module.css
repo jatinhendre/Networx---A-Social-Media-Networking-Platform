@@ -1,0 +1,168 @@
+.conversationPageContainer {
+  display: flex;
+  height: calc(100vh - 72px);
+  min-height: calc(100vh - 72px);
+  background-color: white;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 320px;
+  border-right: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+}
+
+.header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.chatWindow {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.chatHeader {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: #fafafa;
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.userInfo h2 {
+  margin: 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.userInfo p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.loadingState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  color: #999;
+}
+
+.emptyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  color: #999;
+  text-align: center;
+}
+
+.backButton {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  margin-right: 0.25rem;
+  cursor: pointer;
+  color: #4b5563;
+  border-radius: 50%;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.backButton:hover {
+  background-color: #f3f4f6;
+  color: #111827;
+}
+
+@media (max-width: 768px) {
+  .conversationPageContainer {
+    flex-direction: column;
+    height: calc(100vh - 64px);
+    min-height: calc(100vh - 64px);
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+  .chatWindow {
+    height: 100%;
+    max-height: 100%;
+  }
+
+  .chatHeader {
+    padding: 0.75rem;
+  }
+
+  .avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .backButton {
+    display: inline-flex;
+  }
+}
+
+.avatarWrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.onlineIndicator {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  background-color: #10b981;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.activeStatusText {
+  color: #10b981 !important;
+  font-weight: 500;
+}

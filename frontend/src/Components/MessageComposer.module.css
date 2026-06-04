@@ -1,0 +1,58 @@
+.composerContainer {
+  padding: 0.85rem 1rem;
+  border-top: 1px solid #e0e0e0;
+  background-color: #fff;
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  box-shadow: 0 -6px 18px rgba(15, 23, 42, 0.04);
+}
+
+.inputWrapper {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.input {
+  flex: 1;
+  padding: 0.85rem 1rem;
+  border: 1px solid #d8dee9;
+  border-radius: 20px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.3s ease;
+  background: #f8fafc;
+}
+
+.input:focus {
+  border-color: #2563eb;
+  background: #fff;
+}
+
+.input:disabled {
+  background-color: #f0f0f0;
+  cursor: not-allowed;
+}
+
+.sendButton {
+  padding: 0.75rem 1.5rem;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  white-space: nowrap;
+}
+
+.sendButton:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.sendButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}

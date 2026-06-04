@@ -9,6 +9,7 @@ import {
 } from "@/config/redux/action/PostAction";
 import styles from "./PostsFeed.module.css";
 import Image from "next/image";
+import Lightbox from "../../Components/Lightbox";
 
 function PostsFeed({ connections }) {
   const dispatch = useDispatch();
@@ -18,6 +19,7 @@ const authState = useSelector((state) => state.auth) || {};
 
   const [commentContent, setCommentContent] = useState("");
   const [openCommentSection, setOpenCommentSection] = useState(null);
+  const [activeImage, setActiveImage] = useState(null);
 
   const [token, setToken] = useState(null);
 
@@ -95,6 +97,9 @@ const authState = useSelector((state) => state.auth) || {};
                     width={40}
                     height={40}
                     className={styles.avatar}
+                    unoptimized
+                    onClick={() => post.userId?.profilePicture && setActiveImage(post.userId.profilePicture)}
+                    style={{ cursor: post.userId?.profilePicture ? "pointer" : "default" }}
                   />
 
                   <div>
@@ -120,13 +125,19 @@ const authState = useSelector((state) => state.auth) || {};
 
               
                 {post.media && (
-                  <Image
-                    src={post.media}
-                    alt="Post media"
-                    width={600}
-                    height={400}
-                    className={styles.postImage}
-                  />
+                  <div
+                    onClick={() => setActiveImage(post.media)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <Image
+                      src={post.media}
+                      alt="Post media"
+                      width={600}
+                      height={400}
+                      className={styles.postImage}
+                      unoptimized
+                    />
+                  </div>
                 )}
 
                 
@@ -232,6 +243,9 @@ const authState = useSelector((state) => state.auth) || {};
             );
           })}
         </div>
+      )}
+      {activeImage && (
+        <Lightbox src={activeImage} onClose={() => setActiveImage(null)} />
       )}
     </div>
   );

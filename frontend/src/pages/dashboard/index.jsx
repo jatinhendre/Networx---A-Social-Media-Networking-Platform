@@ -13,6 +13,8 @@ import UserLayout from "../layouts/UserLayout";
 import DashboardLayout from "../layouts/DashboardLayout";
 import styles from "./index.module.css";
 import Image from "next/image";
+import Lightbox from "../../Components/Lightbox";
+import toast from "react-hot-toast";
 
 function Dashboard() {
   const [postContent, setPostContent] = useState("");
@@ -21,6 +23,9 @@ function Dashboard() {
   const [openCommentSection, setOpenCommentSection] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
   const [token, setToken] = useState(null);
+  const [activeImage, setActiveImage] = useState(null);
+
+  const [isPosting, setIsPosting] = useState(false);
 
   const authState = useSelector((state) => state.auth);
   const postState = useSelector((state) => state.post);
@@ -37,10 +42,11 @@ function Dashboard() {
   const handlePost = async () => {
     try {
       if (!postContent || postContent.trim() === "") {
-        alert("Please write something!");
+        toast.error("Please write something!");
         return;
       }
 
+      setIsPosting(true);
       const formData = new FormData();
       formData.append("body", postContent);
       formData.append("token", token);
@@ -56,9 +62,12 @@ function Dashboard() {
       const fileInput = document.getElementById("fileUploading");
       if (fileInput) fileInput.value = "";
 
+      toast.success("Post created successfully!");
       dispatch(getAllPosts());
     } catch (error) {
-      alert("Failed to create post");
+      toast.error("Failed to create post");
+    } finally {
+      setIsPosting(false);
     }
   };
 
@@ -145,8 +154,8 @@ function Dashboard() {
                 </label>
 
                 {postContent && (
-                  <button onClick={handlePost} className={styles.postButton}>
-                    Post
+                  <button onClick={handlePost} className={styles.postButton} disabled={isPosting}>
+                    {isPosting ? "Posting..." : "Post"}
                   </button>
                 )}
               </div>
@@ -207,7 +216,11 @@ function Dashboard() {
 
                   {/* MEDIA */}
                   {post.media && (
-                    <div className={styles.postImageWrapper}>
+                    <div
+                      className={styles.postImageWrapper}
+                      onClick={() => setActiveImage(post.media)}
+                      style={{ cursor: "pointer" }}
+                    >
                       <Image
                         src={post.media}
                         alt="post"
@@ -216,6 +229,7 @@ function Dashboard() {
                         fetchPriority="high"
                         sizes="(max-width: 768px) 100vw, 600px"
                         style={{ objectFit: "cover" }}
+                        unoptimized
                       />
                     </div>
                   )}
@@ -319,6 +333,9 @@ function Dashboard() {
                 </div>
               );
             })}
+          {activeImage && (
+            <Lightbox src={activeImage} onClose={() => setActiveImage(null)} />
+          )}
           </div>
         </div>
       </DashboardLayout>

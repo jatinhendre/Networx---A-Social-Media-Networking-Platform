@@ -7,11 +7,11 @@ import PDFDocument from 'pdfkit';
 import Connection from '../models/connections.model.js';
 import Testimonial from '../models/testimonials.model.js';
 import cloudinary from "../config/cloudinary.js";
+import { createNotification } from '../services/notifications.service.js';
 
 
 const convertUserDataToPDF = async(userProfile)=>{
     const doc = new PDFDocument();
-
     const outputPath = 'uploads/'+crypto.randomBytes(16).toString('hex') + '.pdf';
     const stream = fs.createWriteStream(outputPath);
     doc.pipe(stream);
@@ -73,7 +73,7 @@ export const login = async (req, res) => {
 };
 
 export const updateProfilePicture = async (req, res) => {
-    const {token} = req.body;
+    const token = req.body.token || req.query.token;
     try {
         const user = await User.findOne({ token: token });
         if (!user) return res.status(401).json({ message: "Unauthorized" });
@@ -88,6 +88,24 @@ export const updateProfilePicture = async (req, res) => {
         return res.status(500).json({ message: "Server error", error: error.message });
     }
 }
+
+export const updateCoverPicture = async (req, res) => {
+    const token = req.body.token || req.query.token;
+    try {
+        const user = await User.findOne({ token: token });
+        if (!user) return res.status(401).json({ message: "Unauthorized" });
+        if (user.coverPicturePublicId) {
+      await cloudinary.uploader.destroy(user.coverPicturePublicId);
+    }
+    user.coverPicture = req.file.path;         
+    user.coverPicturePublicId = req.file.filename; 
+        await user.save();
+        return res.status(200).json({ message: "Cover picture updated successfully" ,coverPicture:user.coverPicture});
+    } catch (error) {
+        return res.status(500).json({ message: "Server error", error: error.message });
+    }
+}
+
 
 export const updateUser = async (req, res) => {
   try {
@@ -129,7 +147,7 @@ export const getProfile = async(req, res)=>{
             let {token}  = req.query;
         let user = await User.findOne({token:token});
         if(!user) return res.status(401).json({message:"Unauthorized"});
-        const profile = await Profile.findOne({userId:user._id}).populate('userId', 'name email profilePicture username');
+        const profile = await Profile.findOne({userId:user._id}).populate('userId', 'name email profilePicture coverPicture username');
         return res.json(profile);
     }catch(error){
         return res.status(500).json({message:"Server error", error:error.message});
@@ -154,8 +172,57 @@ export const updateProfileData = async(req, res)=>{
 
 export const getAllUserProfiles = async(req, res)=>{
     try{
-        const profiles = await Profile.find().populate('userId', 'name email profilePicture username');
-        return res.status(200).json(profiles);
+        const { token } = req.query;
+        let currentUser = null;
+        let userConnections = [];
+
+        if (token) {
+            currentUser = await User.findOne({ token });
+            if (currentUser) {
+                userConnections = await Connection.find({
+                    $or: [
+                        { userId: currentUser._id },
+                        { connectionId: currentUser._id }
+                    ]
+                });
+            }
+        }
+
+        const profiles = await Profile.find().populate('userId', 'name email profilePicture coverPicture username');
+        
+        // Map profiles to include their connection status with the current user
+        const profilesWithStatus = profiles.map(profile => {
+            const profileObj = profile.toObject ? profile.toObject() : profile;
+            
+            if (!profileObj.userId) {
+                profileObj.connectionStatus = 'none';
+                return profileObj;
+            }
+
+            if (currentUser && profileObj.userId._id.toString() === currentUser._id.toString()) {
+                profileObj.connectionStatus = 'self';
+                return profileObj;
+            }
+
+            const connection = userConnections.find(conn => 
+                (conn.userId.toString() === currentUser?._id.toString() && conn.connectionId.toString() === profileObj.userId._id.toString()) ||
+                (conn.userId.toString() === profileObj.userId._id.toString() && conn.connectionId.toString() === currentUser?._id.toString())
+            );
+
+            if (!connection) {
+                profileObj.connectionStatus = 'none';
+            } else if (connection.status_accepted === true) {
+                profileObj.connectionStatus = 'connected';
+            } else if (currentUser && connection.userId.toString() === currentUser._id.toString()) {
+                profileObj.connectionStatus = 'pending_sent';
+            } else {
+                profileObj.connectionStatus = 'pending_received';
+            }
+
+            return profileObj;
+        });
+
+        return res.status(200).json(profilesWithStatus);
     }catch(error){
         return res.status(500).json({message:"Server error", error:error.message});
     }
@@ -167,7 +234,7 @@ export const downloadProfile = async(req, res)=>{
     if(!user){
         return res.status(404).json({message:"User not found"});
     }
-    const userProfile = await Profile.findOne({userId:user_id}).populate('userId', 'name email profilePicture username');
+    const userProfile = await Profile.findOne({userId:user_id}).populate('userId', 'name email profilePicture coverPicture username');
     let outputPath = await convertUserDataToPDF(userProfile);
     return res.json({"message":outputPath})
 }
@@ -179,7 +246,7 @@ export const getUserProfileBasedOnUsername = async(req, res)=>{
         if(!user){
             return res.status(404).json({message:"User not found!!"});
         }   
-        const profile = await Profile.findOne({userId:user._id}).populate('userId', 'name email profilePicture username');
+        const profile = await Profile.findOne({userId:user._id}).populate('userId', 'name email profilePicture coverPicture username');
         return res.status(200).json(profile);
     }catch(error){
         return res.status(500).json({message:"Server error", error:error.message});
@@ -223,6 +290,19 @@ export const connectionRequest = async(req, res) => {
         const newConnection = await Connection.findById(request._id)
             .populate('userId')
             .populate('connectionId');
+
+        await createNotification({
+            recipientUserId: connectionUser._id,
+            actorUserId: user._id,
+            type: 'connection_request',
+            entityType: 'Connection',
+            entityId: request._id,
+            title: 'New connection request',
+            body: `${user.name} sent you a connection request.`,
+            metadata: {
+                connectionId: request._id,
+            },
+        });
         
         return res.status(200).json({
             message: "Connection request sent successfully",
@@ -245,7 +325,7 @@ export const myConnectionRequests = async(req, res) => {
         const requests = await Connection.find({
             connectionId: user._id, 
             status_accepted: null
-        }).populate('userId', 'name email profilePicture username');
+        }).populate('userId', 'name email profilePicture coverPicture username');
         
         console.log(`Found ${requests.length} connection requests for user ${user._id}`);
         return res.status(200).json(requests);
@@ -270,8 +350,8 @@ export const getMyConnections = async(req, res) => {
             ],
             status_accepted: true  
         })
-        .populate('connectionId', 'name email profilePicture username')
-        .populate('userId', 'name email profilePicture username');
+        .populate('connectionId', 'name email profilePicture coverPicture username')
+        .populate('userId', 'name email profilePicture coverPicture username');
         
         console.log(`Found ${connections.length} accepted connections for user ${user._id}`);
         return res.status(200).json(connections);
@@ -301,6 +381,19 @@ export const acceptConnectionRequest = async(req, res) => {
         }
         
         if (action_type === 'reject') {
+            await createNotification({
+                recipientUserId: connectionRequest.userId,
+                actorUserId: user._id,
+                type: 'connection_rejected',
+                entityType: 'Connection',
+                entityId: connectionRequest._id,
+                title: 'Connection request update',
+                body: `${user.name} declined your connection request.`,
+                metadata: {
+                    connectionId: connectionRequest._id,
+                },
+            });
+
             await Connection.deleteOne({_id: requestId});
             return res.status(200).json({
                 message: "Connection request rejected successfully!"
@@ -309,6 +402,19 @@ export const acceptConnectionRequest = async(req, res) => {
         
         connectionRequest.status_accepted = true;
         await connectionRequest.save();
+
+        await createNotification({
+            recipientUserId: connectionRequest.userId,
+            actorUserId: user._id,
+            type: 'connection_accepted',
+            entityType: 'Connection',
+            entityId: connectionRequest._id,
+            title: 'Connection request accepted',
+            body: `${user.name} accepted your connection request.`,
+            metadata: {
+                connectionId: connectionRequest._id,
+            },
+        });
         
         return res.status(200).json({
             message: "Connection request accepted successfully!"

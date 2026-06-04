@@ -179,3 +179,127 @@
   align-items: center;
 }
 
+.inputGroup {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+}
+
+.passwordWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.passwordWrapper .inputField {
+  padding-right: 42px;
+}
+
+.eyeButton {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 6px;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.eyeButton:hover {
+  color: #374151;
+  background-color: #f3f4f6;
+}
+
+.inputFieldError {
+  border-color: #ef4444 !important;
+  background: #fffbfa !important;
+}
+
+.inputFieldError:focus {
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15) !important;
+}
+
+.errorText {
+  color: #ef4444;
+  font-size: 0.78rem;
+  margin-top: 4px;
+  margin-left: 4px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.passwordChecklist {
+  margin-top: 8px;
+  padding: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: #64748b;
+  transition: all 0.2s ease;
+}
+
+.checklistTitle {
+  font-weight: 600;
+  margin-bottom: 2px;
+  color: #475569;
+}
+
+.checklistItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.15s ease;
+}
+
+.checklistItemSuccess {
+  color: #10b981;
+}
+
+.checklistItemIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.buttonPrimary {
+  margin-top: 28px;
+  width: 100%;
+  padding: 13px 0;
+  border-radius: 999px;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: linear-gradient(90deg, #1d4ed8, #00448c);
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(29, 78, 216, 0.25);
+  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+.buttonPrimary:hover {
+  box-shadow: 0 12px 24px rgba(29, 78, 216, 0.4);
+  transform: translateY(-1px);
+  background: linear-gradient(90deg, #2563eb, #1d4ed8);
+}
+
+.buttonPrimary:active {
+  transform: translateY(0);
+}
+

@@ -27,6 +27,14 @@ const userSchema = new mongoose.Schema({
         type:String,
         default:''
     },
+    coverPicture:{
+        type: String,       
+        default:''
+    },
+    coverPicturePublicId:{
+        type:String,
+        default:''
+    },
     createdAt:{
         type: Date,     
         default: Date.now,

@@ -60,8 +60,10 @@ export const getAllUsers = createAsyncThunk(
     "user/getAllUsers",
     async (_, thunkAPI) => {
         try{
-          
-            const response  =await clientServer.get("/user/getAllProfiles");
+            const token = localStorage.getItem("token");
+            const response = await clientServer.get("/user/getAllProfiles", {
+                params: { token }
+            });
             return thunkAPI.fulfillWithValue(response.data);
         }catch(err){
             return thunkAPI.rejectWithValue(err.response.data);

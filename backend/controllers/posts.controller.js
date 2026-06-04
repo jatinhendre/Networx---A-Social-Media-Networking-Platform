@@ -3,8 +3,7 @@ import User from "../models/users.model.js";
 import Comment from "../models/comments.model.js";
 import cloudinary from "../config/cloudinary.js";
 import Testimonial from "../models/testimonials.model.js";
-
-
+import { createNotification } from "../services/notifications.service.js";
 
 export const createPost = async (req, res) => {
     try {
@@ -121,6 +120,21 @@ export const postComment = async(req, res) => {
         })
         await comment.save();
         const populatedComment = await comment.populate('userId', 'name username profilePicture');
+
+        await createNotification({
+            recipientUserId: post.userId,
+            actorUserId: user._id,
+            type: 'comment',
+            entityType: 'Comment',
+            entityId: comment._id,
+            title: 'New comment on your post',
+            body: `${user.name} commented on your post.`,
+            metadata: {
+                postId: post._id,
+                commentId: comment._id,
+            },
+        });
+
         return res.status(201).json(populatedComment); 
     }catch(err){
         return res.status(500).json({ message: "Server error", error: err.message });       
@@ -191,6 +205,21 @@ export const toggleLike = async (req, res) => {
     }
 
     await post.save();
+
+    if (!alreadyLiked) {
+      await createNotification({
+        recipientUserId: post.userId,
+        actorUserId: user._id,
+        type: 'like',
+        entityType: 'Post',
+        entityId: post._id,
+        title: 'New like on your post',
+        body: `${user.name} liked your post.`,
+        metadata: {
+          postId: post._id,
+        },
+      });
+    }
 
     return res.status(200).json({
       postId: post._id,

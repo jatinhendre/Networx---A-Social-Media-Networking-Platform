@@ -6,6 +6,7 @@ import { clientServer } from "@/config";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { Plus, Trash2, Camera, Save, GraduationCap, Briefcase, User, FileText } from "lucide-react";
+import toast from "react-hot-toast";
 
 function EditProfile() {
   const router = useRouter();
@@ -20,6 +21,9 @@ function EditProfile() {
 
   const [profileImage, setProfileImage] = useState(null);
   const [coverImage, setCoverImage] = useState(null);
+  const [isUploadingProfile, setIsUploadingProfile] = useState(false);
+  const [isUploadingCover, setIsUploadingCover] = useState(false);
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
 
   const [userData, setUserData] = useState({
     name: "",
@@ -68,6 +72,7 @@ function EditProfile() {
   const uploadProfilePicture = async () => {
     if (!profileImage) return;
 
+    setIsUploadingProfile(true);
     const formData = new FormData();
     formData.append("profile_picture", profileImage);
     formData.append("token", token);
@@ -82,16 +87,19 @@ function EditProfile() {
         profilePicture: res.data.profilePicture,
       }));
       setProfileImage(null);
-      alert("Profile picture updated successfully");
+      toast.success("Profile picture updated successfully");
     } catch (err) {
       console.log(err);
-      alert("Image upload failed");
+      toast.error("Profile picture upload failed");
+    } finally {
+      setIsUploadingProfile(false);
     }
   };
 
   const uploadCoverPicture = async () => {
     if (!coverImage) return;
 
+    setIsUploadingCover(true);
     const formData = new FormData();
     formData.append("cover_picture", coverImage);
     formData.append("token", token);
@@ -106,10 +114,12 @@ function EditProfile() {
         coverPicture: res.data.coverPicture,
       }));
       setCoverImage(null);
-      alert("Cover picture updated successfully");
+      toast.success("Cover picture updated successfully");
     } catch (err) {
       console.log(err);
-      alert("Cover image upload failed");
+      toast.error("Cover image upload failed");
+    } finally {
+      setIsUploadingCover(false);
     }
   };
 
@@ -165,6 +175,7 @@ function EditProfile() {
   };
 
   const handleSubmit = async () => {
+    setIsSavingProfile(true);
     try {
       await clientServer.post("/update_profile", {
         token,
@@ -176,10 +187,12 @@ function EditProfile() {
         profileData
       );
 
-      alert("Profile updated successfully");
+      toast.success("Profile updated successfully");
       router.push("/dashboard");
     } catch (err) {
-      alert(err.response?.data?.message || "Update failed");
+      toast.error(err.response?.data?.message || "Update failed");
+    } finally {
+      setIsSavingProfile(false);
     }
   };
 
@@ -231,9 +244,9 @@ function EditProfile() {
                     type="button"
                     className={styles.uploadSubmitBtn}
                     onClick={uploadProfilePicture}
-                    disabled={!profileImage}
+                    disabled={!profileImage || isUploadingProfile}
                   >
-                    <Save size={14} /> Upload Photo
+                    {isUploadingProfile ? "Uploading..." : <><Save size={14} /> Upload Photo</>}
                   </button>
                 </div>
               </div>
@@ -278,9 +291,9 @@ function EditProfile() {
                     type="button"
                     className={styles.uploadSubmitBtn}
                     onClick={uploadCoverPicture}
-                    disabled={!coverImage}
+                    disabled={!coverImage || isUploadingCover}
                   >
-                    <Save size={14} /> Upload Cover
+                    {isUploadingCover ? "Uploading..." : <><Save size={14} /> Upload Cover</>}
                   </button>
                 </div>
               </div>
@@ -354,8 +367,8 @@ function EditProfile() {
               </button>
             </section>
 
-            <button className={styles.saveBtn} onClick={handleSubmit}>
-              <Save size={18} /> Save Changes
+            <button className={styles.saveBtn} onClick={handleSubmit} disabled={isSavingProfile}>
+              {isSavingProfile ? "Saving..." : <><Save size={18} /> Save Changes</>}
             </button>
           </div>
         </div>

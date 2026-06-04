@@ -322,3 +322,10 @@
 .saveBtn:active {
   transform: translateY(0);
 }
+
+.saveBtn:disabled {
+  background: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
+  box-shadow: none;
+}

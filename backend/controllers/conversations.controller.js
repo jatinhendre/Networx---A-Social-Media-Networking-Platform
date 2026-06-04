@@ -19,9 +19,24 @@ export const getConversations = async (req, res) => {
       .sort({ lastMessageAt: -1 })
       .lean();
 
+    // Calculate unreadCount for each conversation
+    const conversationsWithUnread = await Promise.all(
+      conversations.map(async (conversation) => {
+        const unreadCount = await Message.countDocuments({
+          conversationId: conversation._id,
+          senderId: { $ne: userId },
+          isRead: false,
+        });
+        return {
+          ...conversation,
+          unreadCount,
+        };
+      })
+    );
+
     return res.status(200).json({
       message: 'Conversations fetched successfully',
-      conversations,
+      conversations: conversationsWithUnread,
     });
   } catch (error) {
     return res.status(500).json({
@@ -72,9 +87,18 @@ export const findOrCreateConversation = async (req, res) => {
       await conversation.populate('participants', 'username name profilePicture');
     }
 
+    // Calculate unread count for the conversation
+    const conversationObj = conversation.toObject ? conversation.toObject() : conversation;
+    const unreadCount = await Message.countDocuments({
+      conversationId: conversationObj._id,
+      senderId: { $ne: userId },
+      isRead: false,
+    });
+    conversationObj.unreadCount = unreadCount;
+
     return res.status(200).json({
       message: 'Conversation found or created',
-      conversation,
+      conversation: conversationObj,
     });
   } catch (error) {
     return res.status(500).json({
@@ -249,6 +273,23 @@ export const markConversationAsRead = async (req, res) => {
         readAt: new Date(),
       }
     );
+
+    // Emit messages_read socket event to all participants
+    const otherParticipants = conversation.participants
+      .map((p) => p.toString())
+      .filter((pId) => pId !== userId.toString());
+
+    emitToUser(userId, 'messages_read', {
+      conversationId,
+      readBy: userId,
+    });
+
+    otherParticipants.forEach((pId) => {
+      emitToUser(pId, 'messages_read', {
+        conversationId,
+        readBy: userId,
+      });
+    });
 
     return res.status(200).json({
       message: 'Conversation marked as read',

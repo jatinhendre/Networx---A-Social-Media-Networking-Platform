@@ -8,14 +8,22 @@ import {
   reset,
 } from '@/config/redux/reducer/AuthReducer';
 import { getAllPosts } from '@/config/redux/action/PostAction';
-import { getAboutUser, getAllUsers } from '@/config/redux/action/AuthAction';
+import { getAboutUser, getAllUsers, sendConnectionRequest } from '@/config/redux/action/AuthAction';
 
 function DashboardLayout({ children, isSidebarOpen, setIsSidebarOpen }) {
   const router = useRouter();
   const dispatch = useDispatch();
   const authState = useSelector((state) => state.auth);
+
+  const handleConnect = useCallback((connectionId) => {
+    const token = localStorage.getItem('token');
+    if (token && connectionId) {
+      dispatch(sendConnectionRequest({ token, connectionId }));
+    }
+  }, [dispatch]);
+
   useEffect(() => {
-  const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
   if (token) {
     dispatch(setIsTokenThere());
   }
@@ -106,36 +114,73 @@ function DashboardLayout({ children, isSidebarOpen, setIsSidebarOpen }) {
   <h3>Recent Profiles</h3>
 
   <div className={styles.recentProfiles}>
-    {authState.allUsers?.map((user) => {
-      const profile = user.userId; // assuming same structure
+    {authState.allUsers
+      ?.filter((user) => user.connectionStatus !== "self" && user.userId)
+      .map((user) => {
+        const profile = user.userId;
 
-      return (
-        <div
-          key={profile._id}
-          className={styles.profileCard}
-          onClick={() =>
-            router.push(`/view_profile/${profile.username}`)
-          }
-        >
-          <img
-            src={
-              profile.profilePicture && profile.profilePicture !== ""
-                ? profile.profilePicture
-                : "/default.jpg"
-            }
-            alt={profile.name}
-            className={styles.profileAvatar}
-          />
+        return (
+          <div
+            key={profile._id}
+            className={styles.profileCard}
+            onClick={() => router.push(`/view_profile/${profile.username}`)}
+          >
+            <div className={styles.profileLeft}>
+              <img
+                src={
+                  profile.profilePicture && profile.profilePicture !== ""
+                    ? profile.profilePicture
+                    : "/default.jpg"
+                }
+                alt={profile.name}
+                className={styles.profileAvatar}
+              />
 
-          <div className={styles.profileInfo}>
-            <div className={styles.profileName}>{profile.name}</div>
-            <div className={styles.profileUsername}>
-              @{profile.username}
+              <div className={styles.profileInfo}>
+                <div className={styles.profileName}>{profile.name}</div>
+                <div className={styles.profileUsername}>
+                  @{profile.username}
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.profileActions}>
+              {user.connectionStatus === "none" && (
+                <button
+                  className={styles.connectBtn}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleConnect(profile._id);
+                  }}
+                >
+                  Connect
+                </button>
+              )}
+              {user.connectionStatus === "pending_sent" && (
+                <button className={styles.pendingBtn} disabled>
+                  Sent
+                </button>
+              )}
+              {user.connectionStatus === "pending_received" && (
+                <button
+                  className={styles.reviewBtn}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    router.push("/my_connections");
+                  }}
+                >
+                  Review
+                </button>
+              )}
+              {user.connectionStatus === "connected" && (
+                <button className={styles.connectedBtn} disabled>
+                  Connected
+                </button>
+              )}
             </div>
           </div>
-        </div>
-      );
-    })}
+        );
+      })}
   </div>
 </div>
 

@@ -80,6 +80,7 @@ export default function ConversationPage() {
     const handleMessageReceived = (data) => {
       if (data.conversationId === id) {
         dispatch({ type: 'message/addMessage', payload: data.message });
+        socket.emit('mark_as_read', { conversationId: id });
       }
     };
 

@@ -79,9 +79,16 @@ export default function ConversationList({ onSelectConversation }) {
                   })}
                 </span>
               </div>
-              <p className={styles.preview}>
-                {getLastMessagePreview(conversation)}
-              </p>
+              <div className={styles.previewContainer}>
+                <p className={`${styles.preview} ${conversation.unreadCount > 0 ? styles.unreadPreview : ''}`}>
+                  {getLastMessagePreview(conversation)}
+                </p>
+                {conversation.unreadCount > 0 && (
+                  <span className={styles.unreadBadge}>
+                    {conversation.unreadCount}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         );

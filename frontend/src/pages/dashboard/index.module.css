@@ -1,8 +1,6 @@
 .scrollComponent {
   width: 100%;
   padding: 20px 14px;
-  height: calc(100vh - 80px);
-  overflow-y: auto;
   background: linear-gradient(180deg, #f6f7fb, #eef1f8);
   box-sizing: border-box;
 }

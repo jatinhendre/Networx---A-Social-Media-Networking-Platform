@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Navbar from '@/Components/Navbar';
 import Footer from '@/Components/Footer';
 
-function UserLayout({ children, hideFooter = false }) {
+function UserLayout({ children, hideFooter = true }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (

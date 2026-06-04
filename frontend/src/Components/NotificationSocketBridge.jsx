@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getSocket, disconnectSocket } from "@/config/socket";
 import {
@@ -16,11 +16,17 @@ import {
   getNotifications,
   getUnreadNotificationCount,
 } from "@/config/redux/action/NotificationAction";
-import { fetchUnreadCount } from "@/config/redux/action/ConversationAction";
+import { fetchConversations, fetchUnreadCount } from "@/config/redux/action/ConversationAction";
 
 function NotificationSocketBridge() {
   const dispatch = useDispatch();
   const authState = useSelector((state) => state.auth);
+  const { conversations } = useSelector((state) => state.conversations);
+  const conversationsRef = useRef(conversations);
+
+  useEffect(() => {
+    conversationsRef.current = conversations;
+  }, [conversations]);
 
   useEffect(() => {
     if (typeof window === "undefined") return undefined;
@@ -65,15 +71,25 @@ function NotificationSocketBridge() {
         return;
       }
 
-      dispatch(
-        updateConversation({
-          _id: payload.conversationId,
-          lastMessage: payload.message,
-          lastMessageAt: payload.message?.createdAt,
-        })
+      const isCurrentlyActive = activeConversationId === payload.conversationId;
+      const conversationExists = conversationsRef.current?.some(
+        (c) => c._id === payload.conversationId
       );
 
-      if (activeConversationId === payload.conversationId) {
+      if (!conversationExists) {
+        dispatch(fetchConversations());
+      } else {
+        dispatch(
+          updateConversation({
+            _id: payload.conversationId,
+            lastMessage: payload.message,
+            lastMessageAt: payload.message?.createdAt,
+            ...(isCurrentlyActive ? { unreadCount: 0 } : { incrementUnreadCount: true }),
+          })
+        );
+      }
+
+      if (isCurrentlyActive) {
         dispatch(removeUnreadConversationId(payload.conversationId));
         return;
       }
@@ -81,9 +97,18 @@ function NotificationSocketBridge() {
       dispatch(addUnreadConversationId(payload.conversationId));
     });
 
-    socket.on("messages_read", ({ conversationId }) => {
+    socket.on("messages_read", ({ conversationId, readBy }) => {
       if (conversationId) {
-        dispatch(removeUnreadConversationId(conversationId));
+        const currentUserId = authState.user?._id;
+        if (readBy === currentUserId) {
+          dispatch(removeUnreadConversationId(conversationId));
+          dispatch(
+            updateConversation({
+              _id: conversationId,
+              unreadCount: 0,
+            })
+          );
+        }
       }
     });
 
@@ -94,10 +119,15 @@ function NotificationSocketBridge() {
       socket.off("message_received");
       socket.off("messages_read");
     };
-  }, [authState.loggedIn, authState.isTokenThere, authState.token, dispatch]);
+  }, [
+    authState.loggedIn,
+    authState.isTokenThere,
+    authState.token,
+    authState.user?._id,
+    dispatch,
+  ]);
 
   return null;
 }
 
 export default NotificationSocketBridge;
-

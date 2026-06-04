@@ -154,8 +154,57 @@ export const updateProfileData = async(req, res)=>{
 
 export const getAllUserProfiles = async(req, res)=>{
     try{
+        const { token } = req.query;
+        let currentUser = null;
+        let userConnections = [];
+
+        if (token) {
+            currentUser = await User.findOne({ token });
+            if (currentUser) {
+                userConnections = await Connection.find({
+                    $or: [
+                        { userId: currentUser._id },
+                        { connectionId: currentUser._id }
+                    ]
+                });
+            }
+        }
+
         const profiles = await Profile.find().populate('userId', 'name email profilePicture username');
-        return res.status(200).json(profiles);
+        
+        // Map profiles to include their connection status with the current user
+        const profilesWithStatus = profiles.map(profile => {
+            const profileObj = profile.toObject ? profile.toObject() : profile;
+            
+            if (!profileObj.userId) {
+                profileObj.connectionStatus = 'none';
+                return profileObj;
+            }
+
+            if (currentUser && profileObj.userId._id.toString() === currentUser._id.toString()) {
+                profileObj.connectionStatus = 'self';
+                return profileObj;
+            }
+
+            const connection = userConnections.find(conn => 
+                (conn.userId.toString() === currentUser?._id.toString() && conn.connectionId.toString() === profileObj.userId._id.toString()) ||
+                (conn.userId.toString() === profileObj.userId._id.toString() && conn.connectionId.toString() === currentUser?._id.toString())
+            );
+
+            if (!connection) {
+                profileObj.connectionStatus = 'none';
+            } else if (connection.status_accepted === true) {
+                profileObj.connectionStatus = 'connected';
+            } else if (currentUser && connection.userId.toString() === currentUser._id.toString()) {
+                profileObj.connectionStatus = 'pending_sent';
+            } else {
+                profileObj.connectionStatus = 'pending_received';
+            }
+
+            return profileObj;
+        });
+
+        return res.status(200).json(profilesWithStatus);
     }catch(error){
         return res.status(500).json({message:"Server error", error:error.message});
     }

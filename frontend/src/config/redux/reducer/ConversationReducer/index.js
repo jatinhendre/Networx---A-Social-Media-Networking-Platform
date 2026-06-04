@@ -37,10 +37,21 @@ const conversationSlice = createSlice({
         (c) => c._id === action.payload._id
       );
       if (index !== -1) {
+        const currentUnread = state.conversations[index].unreadCount || 0;
+        const newUnreadCount = action.payload.incrementUnreadCount
+          ? currentUnread + 1
+          : action.payload.unreadCount !== undefined
+          ? action.payload.unreadCount
+          : currentUnread;
+
         const updatedConversation = {
           ...state.conversations[index],
           ...action.payload,
+          unreadCount: newUnreadCount,
         };
+
+        delete updatedConversation.incrementUnreadCount;
+
         state.conversations.splice(index, 1);
         state.conversations.unshift(updatedConversation);
       }

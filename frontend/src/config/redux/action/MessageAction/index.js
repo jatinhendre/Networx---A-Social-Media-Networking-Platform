@@ -88,6 +88,12 @@ export const markConversationAsRead =
 
       dispatch(markMessagesAsRead(null));
       dispatch(removeUnreadConversationId(conversationId));
+      dispatch(
+        updateConversation({
+          _id: conversationId,
+          unreadCount: 0,
+        })
+      );
     } catch (error) {
       console.error("Error marking as read:", error);
     }

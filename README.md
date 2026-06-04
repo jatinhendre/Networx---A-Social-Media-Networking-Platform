@@ -312,7 +312,7 @@ All endpoints are prefixed with the base API URL.
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/networx.git
+git clone [https://github.com/yourusername/networx.git](https://github.com/jatinhendre/Networx-lets-connect.git)
 cd networx
 ```
 

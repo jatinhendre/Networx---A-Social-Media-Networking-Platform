@@ -139,7 +139,7 @@
   font-weight: 600;
   padding: 5px 10px;
   border-radius: 20px;
-  border: none;
+  border: 1px solid transparent;
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.2s ease;
@@ -155,8 +155,9 @@
 }
 
 .pendingBtn {
-  background-color: #e5e7eb;
-  color: #6b7280;
+  background-color: #eff6ff;
+  color: #2563eb;
+  border-color: #bfdbfe;
   cursor: not-allowed;
 }
 
@@ -170,8 +171,9 @@
 }
 
 .connectedBtn {
-  background-color: #f3f4f6;
-  color: #9ca3af;
+  background-color: #f0fdf4;
+  color: #16a34a;
+  border-color: #bbf7d0;
   cursor: not-allowed;
 }
 

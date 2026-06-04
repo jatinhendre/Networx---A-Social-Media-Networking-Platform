@@ -80,7 +80,7 @@ export default function MessagesPage() {
   }
 
   return (
-    <UserLayout hideFooter>
+    <UserLayout hideFooter showMobileDrawer>
       <div className={styles.messagesPageContainer}>
         <div className={styles.sidebar}>
           <div className={styles.header}>

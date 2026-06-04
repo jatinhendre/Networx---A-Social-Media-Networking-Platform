@@ -1,0 +1,66 @@
+.mobileDrawer {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 260px;
+  height: 100vh;
+  background: white;
+  z-index: 3000;
+  transition: left 0.3s ease;
+  padding: 1.5rem;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.drawerOpen {
+  left: 0;
+}
+
+.drawerOption {
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  border-radius: 8px;
+  font-weight: 500;
+  color: #374151;
+  transition: all 0.2s ease;
+}
+
+.drawerOption:hover {
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.closeBtn {
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  color: #4b5563;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  align-self: flex-start;
+}
+
+.closeBtn:hover {
+  background: #e5e7eb;
+  color: #1f2937;
+  transform: scale(1.05);
+}
+
+.closeBtn:active {
+  transform: scale(0.95);
+}
+
+@media (min-width: 769px) {
+  .mobileDrawer {
+    display: none;
+  }
+}

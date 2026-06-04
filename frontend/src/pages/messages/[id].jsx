@@ -116,7 +116,7 @@ export default function ConversationPage() {
   const isTyping = activeConversation && typingConversations[activeConversation._id];
 
   return (
-    <UserLayout>
+    <UserLayout showMobileDrawer>
       <div className={styles.conversationPageContainer}>
         <div className={styles.sidebar}>
           <div className={styles.header}>

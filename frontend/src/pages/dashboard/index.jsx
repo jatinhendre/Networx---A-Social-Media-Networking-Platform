@@ -13,6 +13,7 @@ import UserLayout from "../layouts/UserLayout";
 import DashboardLayout from "../layouts/DashboardLayout";
 import styles from "./index.module.css";
 import Image from "next/image";
+import Lightbox from "../../Components/Lightbox";
 
 function Dashboard() {
   const [postContent, setPostContent] = useState("");
@@ -21,6 +22,7 @@ function Dashboard() {
   const [openCommentSection, setOpenCommentSection] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
   const [token, setToken] = useState(null);
+  const [activeImage, setActiveImage] = useState(null);
 
   const authState = useSelector((state) => state.auth);
   const postState = useSelector((state) => state.post);
@@ -207,7 +209,11 @@ function Dashboard() {
 
                   {/* MEDIA */}
                   {post.media && (
-                    <div className={styles.postImageWrapper}>
+                    <div
+                      className={styles.postImageWrapper}
+                      onClick={() => setActiveImage(post.media)}
+                      style={{ cursor: "pointer" }}
+                    >
                       <Image
                         src={post.media}
                         alt="post"
@@ -216,6 +222,7 @@ function Dashboard() {
                         fetchPriority="high"
                         sizes="(max-width: 768px) 100vw, 600px"
                         style={{ objectFit: "cover" }}
+                        unoptimized
                       />
                     </div>
                   )}
@@ -319,6 +326,9 @@ function Dashboard() {
                 </div>
               );
             })}
+          {activeImage && (
+            <Lightbox src={activeImage} onClose={() => setActiveImage(null)} />
+          )}
           </div>
         </div>
       </DashboardLayout>

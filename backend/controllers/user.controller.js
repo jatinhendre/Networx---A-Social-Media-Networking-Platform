@@ -73,7 +73,7 @@ export const login = async (req, res) => {
 };
 
 export const updateProfilePicture = async (req, res) => {
-    const {token} = req.body;
+    const token = req.body.token || req.query.token;
     try {
         const user = await User.findOne({ token: token });
         if (!user) return res.status(401).json({ message: "Unauthorized" });
@@ -88,6 +88,24 @@ export const updateProfilePicture = async (req, res) => {
         return res.status(500).json({ message: "Server error", error: error.message });
     }
 }
+
+export const updateCoverPicture = async (req, res) => {
+    const token = req.body.token || req.query.token;
+    try {
+        const user = await User.findOne({ token: token });
+        if (!user) return res.status(401).json({ message: "Unauthorized" });
+        if (user.coverPicturePublicId) {
+      await cloudinary.uploader.destroy(user.coverPicturePublicId);
+    }
+    user.coverPicture = req.file.path;         
+    user.coverPicturePublicId = req.file.filename; 
+        await user.save();
+        return res.status(200).json({ message: "Cover picture updated successfully" ,coverPicture:user.coverPicture});
+    } catch (error) {
+        return res.status(500).json({ message: "Server error", error: error.message });
+    }
+}
+
 
 export const updateUser = async (req, res) => {
   try {
@@ -129,7 +147,7 @@ export const getProfile = async(req, res)=>{
             let {token}  = req.query;
         let user = await User.findOne({token:token});
         if(!user) return res.status(401).json({message:"Unauthorized"});
-        const profile = await Profile.findOne({userId:user._id}).populate('userId', 'name email profilePicture username');
+        const profile = await Profile.findOne({userId:user._id}).populate('userId', 'name email profilePicture coverPicture username');
         return res.json(profile);
     }catch(error){
         return res.status(500).json({message:"Server error", error:error.message});
@@ -170,7 +188,7 @@ export const getAllUserProfiles = async(req, res)=>{
             }
         }
 
-        const profiles = await Profile.find().populate('userId', 'name email profilePicture username');
+        const profiles = await Profile.find().populate('userId', 'name email profilePicture coverPicture username');
         
         // Map profiles to include their connection status with the current user
         const profilesWithStatus = profiles.map(profile => {
@@ -216,7 +234,7 @@ export const downloadProfile = async(req, res)=>{
     if(!user){
         return res.status(404).json({message:"User not found"});
     }
-    const userProfile = await Profile.findOne({userId:user_id}).populate('userId', 'name email profilePicture username');
+    const userProfile = await Profile.findOne({userId:user_id}).populate('userId', 'name email profilePicture coverPicture username');
     let outputPath = await convertUserDataToPDF(userProfile);
     return res.json({"message":outputPath})
 }
@@ -228,7 +246,7 @@ export const getUserProfileBasedOnUsername = async(req, res)=>{
         if(!user){
             return res.status(404).json({message:"User not found!!"});
         }   
-        const profile = await Profile.findOne({userId:user._id}).populate('userId', 'name email profilePicture username');
+        const profile = await Profile.findOne({userId:user._id}).populate('userId', 'name email profilePicture coverPicture username');
         return res.status(200).json(profile);
     }catch(error){
         return res.status(500).json({message:"Server error", error:error.message});
@@ -307,7 +325,7 @@ export const myConnectionRequests = async(req, res) => {
         const requests = await Connection.find({
             connectionId: user._id, 
             status_accepted: null
-        }).populate('userId', 'name email profilePicture username');
+        }).populate('userId', 'name email profilePicture coverPicture username');
         
         console.log(`Found ${requests.length} connection requests for user ${user._id}`);
         return res.status(200).json(requests);
@@ -332,8 +350,8 @@ export const getMyConnections = async(req, res) => {
             ],
             status_accepted: true  
         })
-        .populate('connectionId', 'name email profilePicture username')
-        .populate('userId', 'name email profilePicture username');
+        .populate('connectionId', 'name email profilePicture coverPicture username')
+        .populate('userId', 'name email profilePicture coverPicture username');
         
         console.log(`Found ${connections.length} accepted connections for user ${user._id}`);
         return res.status(200).json(connections);

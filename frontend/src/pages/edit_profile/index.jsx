@@ -10,15 +10,22 @@ import { Plus, Trash2, Camera, Save, GraduationCap, Briefcase, User, FileText } 
 function EditProfile() {
   const router = useRouter();
 
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const [token, setToken] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setToken(localStorage.getItem("token"));
+    }
+  }, []);
 
   const [profileImage, setProfileImage] = useState(null);
+  const [coverImage, setCoverImage] = useState(null);
 
   const [userData, setUserData] = useState({
     name: "",
     username: "",
     profilePicture: "",
+    coverPicture: "",
   });
 
   const [profileData, setProfileData] = useState({
@@ -37,6 +44,7 @@ function EditProfile() {
           username: res.data.userId.username,
 
           profilePicture: res.data.userId.profilePicture || "",
+          coverPicture: res.data.userId.coverPicture || "",
         });
 
         setProfileData(res.data);
@@ -53,6 +61,10 @@ function EditProfile() {
     setProfileImage(e.target.files[0]);
   };
 
+  const handleCoverChange = (e) => {
+    setCoverImage(e.target.files[0]);
+  };
+
   const uploadProfilePicture = async () => {
     if (!profileImage) return;
 
@@ -62,18 +74,42 @@ function EditProfile() {
 
     try {
       const res = await clientServer.post(
-        "/update_profile_picture",
+        `/update_profile_picture?token=${token}`,
         formData
       );
       setUserData((prev) => ({
         ...prev,
         profilePicture: res.data.profilePicture,
       }));
-
+      setProfileImage(null);
       alert("Profile picture updated successfully");
     } catch (err) {
       console.log(err);
       alert("Image upload failed");
+    }
+  };
+
+  const uploadCoverPicture = async () => {
+    if (!coverImage) return;
+
+    const formData = new FormData();
+    formData.append("cover_picture", coverImage);
+    formData.append("token", token);
+
+    try {
+      const res = await clientServer.post(
+        `/update_cover_picture?token=${token}`,
+        formData
+      );
+      setUserData((prev) => ({
+        ...prev,
+        coverPicture: res.data.coverPicture,
+      }));
+      setCoverImage(null);
+      alert("Cover picture updated successfully");
+    } catch (err) {
+      console.log(err);
+      alert("Cover image upload failed");
     }
   };
 
@@ -154,35 +190,100 @@ function EditProfile() {
           <div className={styles.cardWrapper}>
             <h2>Edit Profile</h2>
 
-            <div className={styles.profileHeader}>
-              <Image
-                src={
-                  profileImage
-                    ? URL.createObjectURL(profileImage)
-                    : userData.profilePicture && userData.profilePicture !== ""
-                      ? userData.profilePicture
-                      : "/default.jpg"
-                }
-                alt="Profile Picture"
-                className={styles.avatar}
-                width={130}
-                height={130}
-              />
+            <div className={styles.mediaUploadGrid}>
+              <div className={styles.uploadCard}>
+                <h4><User size={16} /> Profile Photo</h4>
+                <div className={styles.previewContainer}>
+                  <Image
+                    src={
+                      profileImage
+                        ? URL.createObjectURL(profileImage)
+                        : userData.profilePicture && userData.profilePicture !== ""
+                          ? userData.profilePicture
+                          : "/default.jpg"
+                    }
+                    alt="Profile Picture"
+                    className={styles.previewImage}
+                    width={130}
+                    height={130}
+                    unoptimized
+                  />
+                </div>
+                <div className={styles.uploadActions}>
+                  <input
+                    type="file"
+                    id="profileInput"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    style={{ display: "none" }}
+                  />
+                  <button
+                    type="button"
+                    className={styles.fileSelectBtn}
+                    onClick={() => document.getElementById("profileInput").click()}
+                  >
+                    <Camera size={14} /> Choose Photo
+                  </button>
+                  <span className={styles.fileName}>
+                    {profileImage ? profileImage.name : "No file chosen"}
+                  </span>
+                  <button
+                    type="button"
+                    className={styles.uploadSubmitBtn}
+                    onClick={uploadProfilePicture}
+                    disabled={!profileImage}
+                  >
+                    <Save size={14} /> Upload Photo
+                  </button>
+                </div>
+              </div>
 
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className={styles.fileInput}
-              />
-
-              <button
-                type="button"
-                className={styles.secondaryBtn}
-                onClick={uploadProfilePicture}
-              >
-                <Camera size={16} /> Upload Photo
-              </button>
+              <div className={styles.uploadCard}>
+                <h4><Camera size={16} /> Cover Photo</h4>
+                <div className={styles.previewContainerSquare}>
+                  <Image
+                    src={
+                      coverImage
+                        ? URL.createObjectURL(coverImage)
+                        : userData.coverPicture && userData.coverPicture !== ""
+                          ? userData.coverPicture
+                          : "/default.jpg"
+                    }
+                    alt="Cover Picture"
+                    className={styles.previewImage}
+                    width={260}
+                    height={130}
+                    unoptimized
+                  />
+                </div>
+                <div className={styles.uploadActions}>
+                  <input
+                    type="file"
+                    id="coverInput"
+                    accept="image/*"
+                    onChange={handleCoverChange}
+                    style={{ display: "none" }}
+                  />
+                  <button
+                    type="button"
+                    className={styles.fileSelectBtn}
+                    onClick={() => document.getElementById("coverInput").click()}
+                  >
+                    <Camera size={14} /> Choose Cover
+                  </button>
+                  <span className={styles.fileName}>
+                    {coverImage ? coverImage.name : "No file chosen"}
+                  </span>
+                  <button
+                    type="button"
+                    className={styles.uploadSubmitBtn}
+                    onClick={uploadCoverPicture}
+                    disabled={!coverImage}
+                  >
+                    <Save size={14} /> Upload Cover
+                  </button>
+                </div>
+              </div>
             </div>
 
             <section className={styles.form}>

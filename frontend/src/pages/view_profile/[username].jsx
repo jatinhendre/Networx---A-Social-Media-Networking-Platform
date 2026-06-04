@@ -13,6 +13,7 @@ import {
 import { findOrCreateConversation } from "@/config/redux/action/ConversationAction";
 import Image from "next/image";
 import { User, Briefcase, GraduationCap, Award, Activity, MessageSquare, Plus, Mail, MessageCircle, Edit2, Calendar } from "lucide-react";
+import Lightbox from "../../Components/Lightbox";
 
 function ViewProfile({ username, profile }) {
   const router = useRouter();
@@ -22,6 +23,7 @@ function ViewProfile({ username, profile }) {
   const postState = useSelector((state) => state.post);
 
   const [connectionStatus, setConnectionStatus] = useState("none");
+  const [activeImage, setActiveImage] = useState(null);
 
   // Check if this profile belongs to the logged-in user
   const isMyProfile = authState.user?._id === profile?.userId?._id;
@@ -100,9 +102,29 @@ function ViewProfile({ username, profile }) {
       <DashboardLayout>
         <div className={styles.container}>
           <div className={styles.profileHeader}>
-            <div className={styles.coverPhoto}></div>
+            <div
+              className={styles.coverPhoto}
+              onClick={() => userId?.coverPicture && setActiveImage(userId.coverPicture)}
+              style={{ cursor: userId?.coverPicture ? "pointer" : "default" }}
+            >
+              {userId?.coverPicture && userId.coverPicture !== "" ? (
+                <Image
+                  src={userId.coverPicture}
+                  alt="Cover Photo"
+                  className={styles.coverImage}
+                  width={800}
+                  height={140}
+                  priority
+                  unoptimized
+                />
+              ) : null}
+            </div>
             <div className={styles.headerContent}>
-              <div className={styles.avatarWrapper}>
+              <div
+                className={styles.avatarWrapper}
+                onClick={() => userId?.profilePicture && setActiveImage(userId.profilePicture)}
+                style={{ cursor: userId?.profilePicture ? "pointer" : "default" }}
+              >
                 <Image
                   src={
                     userId?.profilePicture && userId.profilePicture !== ""
@@ -113,6 +135,7 @@ function ViewProfile({ username, profile }) {
                   className={styles.avatar}
                   width={110}
                   height={110}
+                  unoptimized
                 />
               </div>
 
@@ -259,13 +282,18 @@ function ViewProfile({ username, profile }) {
                 {userPosts.map((post) => (
                   <div key={post._id} className={styles.activityCard}>
                     {post.media && (
-                      <div className={styles.activityImageWrapper}>
+                      <div
+                        className={styles.activityImageWrapper}
+                        onClick={() => setActiveImage(post.media)}
+                        style={{ cursor: "pointer" }}
+                      >
                         <Image
                           src={post.media}
                           alt="post media"
                           className={styles.activityImage}
                           width={70}
                           height={70}
+                          unoptimized
                         />
                       </div>
                     )}
@@ -282,6 +310,9 @@ function ViewProfile({ username, profile }) {
             ) : (
               <p className={styles.empty}>No recent activity found</p>
             )}
+          {activeImage && (
+            <Lightbox src={activeImage} onClose={() => setActiveImage(null)} />
+          )}
           </div>
         </div>
       </DashboardLayout>

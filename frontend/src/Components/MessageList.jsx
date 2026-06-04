@@ -66,15 +66,19 @@ export default function MessageList({ conversationId }) {
             )}
             <div className={styles.messageBubble}>
               <p className={styles.content}>{message.content}</p>
-              <span className={styles.timestamp}>
-                {new Date(message.createdAt).toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
-              </span>
-              {isSentByCurrentUser && message.isRead && (
-                <span className={styles.readIndicator}>✓✓</span>
-              )}
+              <div className={styles.messageMeta}>
+                <span className={styles.timestamp}>
+                  {new Date(message.createdAt).toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </span>
+                {isSentByCurrentUser && (
+                  <span className={`${styles.readIndicator} ${message.isRead ? styles.read : ''}`}>
+                    {message.isRead ? '✓✓' : '✓'}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         );

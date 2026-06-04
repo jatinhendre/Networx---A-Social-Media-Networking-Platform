@@ -43,9 +43,10 @@ const messageSlice = createSlice({
     },
 
     markMessagesAsRead: (state, action) => {
-      // Mark all messages from a specific sender as read
+      const readerId = action.payload?.toString() || action.payload;
       state.messages.forEach((msg) => {
-        if (!msg.isRead && msg.senderId._id === action.payload) {
+        const msgSenderId = msg.senderId?._id?.toString() || msg.senderId?.toString() || msg.senderId;
+        if (!msg.isRead && msgSenderId !== readerId) {
           msg.isRead = true;
           msg.readAt = new Date();
         }

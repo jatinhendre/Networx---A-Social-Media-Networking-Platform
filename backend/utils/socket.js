@@ -62,8 +62,37 @@ export const initializeSocket = (server, corsOptions) => {
   io.on('connection', (socket) => {
     const userId = socket.user._id;
 
+    const wasOnline = isUserOnline(userId);
     addUserSocket(userId, socket.id);
     socket.join(`user:${userId}`);
+
+    // Send the list of currently online user IDs to the connected client
+    socket.emit('online_users', getConnectedUserIds());
+
+    // Broadcast that this user is online to other users if they just connected
+    if (!wasOnline) {
+      socket.broadcast.emit('user_online', { userId: userId.toString() });
+    }
+
+    // Join specific conversation room
+    socket.on('join_conversation', (data) => {
+      const { conversationId } = data;
+      if (conversationId) {
+        socket.join(`conversation:${conversationId}`);
+      }
+    });
+
+    // Listen for typing events
+    socket.on('typing', (data) => {
+      const { conversationId, isTyping } = data;
+      if (conversationId) {
+        socket.to(`conversation:${conversationId}`).emit('typing_status', {
+          conversationId,
+          userId: userId.toString(),
+          isTyping,
+        });
+      }
+    });
 
     // Join user to their conversation rooms
     socket.on('join_conversations', async () => {
@@ -204,6 +233,9 @@ export const initializeSocket = (server, corsOptions) => {
 
     socket.on('disconnect', () => {
       removeUserSocket(userId, socket.id);
+      if (!isUserOnline(userId)) {
+        io.emit('user_offline', { userId: userId.toString() });
+      }
     });
   });
 

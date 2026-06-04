@@ -7,7 +7,7 @@ import styles from './ConversationList.module.css';
 const fallbackAvatar = '/default.jpg';
 
 export default function ConversationList({ onSelectConversation }) {
-  const { conversations } = useSelector((state) => state.conversations);
+  const { conversations, onlineUsers = [] } = useSelector((state) => state.conversations);
   const { user: currentUser } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const router = useRouter();
@@ -49,7 +49,7 @@ export default function ConversationList({ onSelectConversation }) {
     <div className={styles.conversationListContainer}>
       {conversations.map((conversation) => {
         const otherUser = getOtherUser(conversation);
-        if (!otherUser) return null;
+        const isOnline = otherUser && onlineUsers.includes(otherUser._id);
 
         return (
           <div
@@ -59,14 +59,17 @@ export default function ConversationList({ onSelectConversation }) {
             }`}
             onClick={() => handleSelectConversation(conversation)}
           >
-            <img
-              src={otherUser.profilePicture || fallbackAvatar}
-              alt={otherUser.username}
-              className={styles.avatar}
-              onError={(event) => {
-                event.currentTarget.src = fallbackAvatar;
-              }}
-            />
+            <div className={styles.avatarWrapper}>
+              <img
+                src={otherUser.profilePicture || fallbackAvatar}
+                alt={otherUser.username}
+                className={styles.avatar}
+                onError={(event) => {
+                  event.currentTarget.src = fallbackAvatar;
+                }}
+              />
+              {isOnline && <span className={styles.onlineIndicator} />}
+            </div>
             <div className={styles.conversationInfo}>
               <div className={styles.header}>
                 <h3 className={styles.name}>{otherUser.name}</h3>

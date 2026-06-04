@@ -11,6 +11,10 @@ import {
   clearUnreadConversationIds,
   removeUnreadConversationId,
   updateConversation,
+  setOnlineUsers,
+  addUserOnline,
+  removeUserOffline,
+  setTypingStatus,
 } from "@/config/redux/reducer/ConversationReducer";
 import {
   getNotifications,
@@ -59,6 +63,22 @@ function NotificationSocketBridge() {
 
     socket.on("notification:unread_count", ({ unreadCount }) => {
       dispatch(setUnreadNotificationCount(unreadCount));
+    });
+
+    socket.on("online_users", (userIds) => {
+      dispatch(setOnlineUsers(userIds));
+    });
+
+    socket.on("user_online", ({ userId }) => {
+      dispatch(addUserOnline(userId));
+    });
+
+    socket.on("user_offline", ({ userId }) => {
+      dispatch(removeUserOffline(userId));
+    });
+
+    socket.on("typing_status", ({ conversationId, isTyping }) => {
+      dispatch(setTypingStatus({ conversationId, isTyping }));
     });
 
     socket.on("message_received", (payload) => {
@@ -118,6 +138,10 @@ function NotificationSocketBridge() {
       socket.off("notification:unread_count");
       socket.off("message_received");
       socket.off("messages_read");
+      socket.off("online_users");
+      socket.off("user_online");
+      socket.off("user_offline");
+      socket.off("typing_status");
     };
   }, [
     authState.loggedIn,

@@ -27,7 +27,7 @@ export default function ConversationPage() {
   const { isTokenThere, token, user: currentUser } = useSelector(
     (state) => state.auth
   );
-  const { conversations, currentConversation } = useSelector(
+  const { conversations, currentConversation, onlineUsers = [], typingConversations = {} } = useSelector(
     (state) => state.conversations
   );
   const { messages, isLoading } = useSelector((state) => state.messages);
@@ -112,6 +112,9 @@ export default function ConversationPage() {
     (participant) => participant._id !== currentUser?._id
   );
 
+  const isOnline = otherUser && onlineUsers.includes(otherUser._id);
+  const isTyping = activeConversation && typingConversations[activeConversation._id];
+
   return (
     <UserLayout>
       <div className={styles.conversationPageContainer}>
@@ -135,17 +138,26 @@ export default function ConversationPage() {
                 </button>
                 {otherUser && (
                   <>
-                    <img
-                      src={otherUser.profilePicture || fallbackAvatar}
-                      alt={otherUser.username}
-                      className={styles.avatar}
-                      onError={(event) => {
-                        event.currentTarget.src = fallbackAvatar;
-                      }}
-                    />
+                    <div className={styles.avatarWrapper}>
+                      <img
+                        src={otherUser.profilePicture || fallbackAvatar}
+                        alt={otherUser.username}
+                        className={styles.avatar}
+                        onError={(event) => {
+                          event.currentTarget.src = fallbackAvatar;
+                        }}
+                      />
+                      {isOnline && <span className={styles.onlineIndicator} />}
+                    </div>
                     <div className={styles.userInfo}>
                       <h2>{otherUser.name}</h2>
-                      <p>@{otherUser.username}</p>
+                      {isTyping ? (
+                        <p className={styles.activeStatusText}>Typing...</p>
+                      ) : isOnline ? (
+                        <p className={styles.activeStatusText}>Active now</p>
+                      ) : (
+                        <p>@{otherUser.username}</p>
+                      )}
                     </div>
                   </>
                 )}

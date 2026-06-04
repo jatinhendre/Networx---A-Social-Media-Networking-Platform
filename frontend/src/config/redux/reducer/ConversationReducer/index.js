@@ -9,6 +9,8 @@ const initialState = {
   message: "",
   unreadCount: 0,
   unreadConversationIds: [],
+  onlineUsers: [],
+  typingConversations: {},
 };
 
 const conversationSlice = createSlice({
@@ -124,6 +126,31 @@ const conversationSlice = createSlice({
     emptyMessage: (state) => {
       state.message = "";
     },
+
+    setOnlineUsers: (state, action) => {
+      state.onlineUsers = action.payload;
+    },
+
+    addUserOnline: (state, action) => {
+      const userId = action.payload;
+      if (userId && !state.onlineUsers.includes(userId)) {
+        state.onlineUsers.push(userId);
+      }
+    },
+
+    removeUserOffline: (state, action) => {
+      const userId = action.payload;
+      state.onlineUsers = state.onlineUsers.filter(
+        (id) => id !== userId
+      );
+    },
+
+    setTypingStatus: (state, action) => {
+      const { conversationId, isTyping } = action.payload;
+      if (conversationId) {
+        state.typingConversations[conversationId] = isTyping;
+      }
+    },
   },
 });
 
@@ -144,6 +171,10 @@ export const {
   setIsSuccess,
   setMessage,
   emptyMessage,
+  setOnlineUsers,
+  addUserOnline,
+  removeUserOffline,
+  setTypingStatus,
 } = conversationSlice.actions;
 
 export default conversationSlice.reducer;

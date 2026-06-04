@@ -114,7 +114,8 @@
 
 @media (max-width: 768px) {
   .conversationListContainer {
-    max-height: 300px;
+    height: 100%;
+    max-height: none;
     overflow-y: auto;
   }
 

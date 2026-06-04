@@ -131,15 +131,16 @@
 @media (max-width: 768px) {
   .messagesPageContainer {
     flex-direction: column;
-    height: calc(100vh - 72px);
-    min-height: calc(100vh - 72px);
+    height: calc(100vh - 64px);
+    min-height: calc(100vh - 64px);
   }
 
   .sidebar {
     width: 100%;
     border-right: none;
     border-bottom: 1px solid #e0e0e0;
-    max-height: 320px;
+    height: 100%;
+    max-height: none;
   }
 
   .mainContent {

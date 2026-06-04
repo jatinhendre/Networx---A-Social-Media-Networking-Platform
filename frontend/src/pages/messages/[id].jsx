@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
+import { ArrowLeft } from 'lucide-react';
 import UserLayout from '@/pages/layouts/UserLayout';
 import ConversationList from '@/Components/ConversationList';
 import MessageList from '@/Components/MessageList';
@@ -124,6 +125,14 @@ export default function ConversationPage() {
           {id && activeConversation ? (
             <>
               <div className={styles.chatHeader}>
+                <button
+                  type="button"
+                  onClick={() => router.push('/messages')}
+                  className={styles.backButton}
+                  aria-label="Back to messages"
+                >
+                  <ArrowLeft size={20} />
+                </button>
                 {otherUser && (
                   <>
                     <img

@@ -84,22 +84,39 @@
   text-align: center;
 }
 
+.backButton {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  margin-right: 0.25rem;
+  cursor: pointer;
+  color: #4b5563;
+  border-radius: 50%;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.backButton:hover {
+  background-color: #f3f4f6;
+  color: #111827;
+}
+
 @media (max-width: 768px) {
   .conversationPageContainer {
     flex-direction: column;
-    height: calc(100vh - 72px);
-    min-height: calc(100vh - 72px);
+    height: calc(100vh - 64px);
+    min-height: calc(100vh - 64px);
   }
 
   .sidebar {
-    width: 100%;
-    border-right: none;
-    border-bottom: 1px solid #e0e0e0;
-    max-height: 300px;
+    display: none;
   }
 
   .chatWindow {
-    max-height: calc(100vh - 352px);
+    height: 100%;
+    max-height: 100%;
   }
 
   .chatHeader {
@@ -109,5 +126,9 @@
   .avatar {
     width: 36px;
     height: 36px;
+  }
+
+  .backButton {
+    display: inline-flex;
   }
 }

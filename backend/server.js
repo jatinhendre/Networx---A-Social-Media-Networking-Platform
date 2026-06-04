@@ -10,6 +10,7 @@ import userRoutes from './routes/users.routes.js'
 import notificationRoutes from './routes/notifications.routes.js'
 import conversationRoutes from './routes/conversations.routes.js'
 import { initializeSocket } from './utils/socket.js'
+import './utils/keepAlive.js'
 
 const app = express()
 const server = http.createServer(app)
@@ -30,6 +31,9 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.static('uploads'))
 
 // ROUTES
+app.get('/api/ping', (req, res) => {
+  res.status(200).json({ message: 'Server is alive' })
+})
 app.use(postRoutes)
 app.use(userRoutes)
 app.use(notificationRoutes)

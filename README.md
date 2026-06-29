@@ -29,7 +29,6 @@ Networx is a feature-rich social networking platform where professionals can con
 - Bio, current job title, education history, and work experience sections
 - Username-based public profile URLs (`/view_profile/:username`)
 - Profile page shows a **"(You)"** badge when viewing your own profile
-- **Download resume** feature to export your profile as a PDF
 
 ### 🤝 Connection System
 - Send, accept, and reject connection requests
@@ -106,10 +105,6 @@ Networx is a feature-rich social networking platform where professionals can con
 - Mobile-optimised chat interface — conversation list and chat window adapt to screen width
 - CSS Modules used throughout for scoped, maintainable styling
 
-### ☁️ Backend Reliability
-- **Keep-Alive cron job** — pings the Render backend every 5 minutes to prevent cold starts on the free tier, ensuring the API stays responsive
-
----
 
 ## 🛠️ Technology Stack
 
@@ -135,8 +130,6 @@ Networx is a feature-rich social networking platform where professionals can con
 | **Bcrypt** | Password hashing |
 | **Cloudinary** | Cloud media storage (images/videos) |
 | **Multer** | Multipart file upload handling |
-| **node-cron** | Keep-alive scheduled job |
-| **PDFKit** | PDF resume generation |
 | **CORS** | Cross-origin request policy |
 
 ### Deployment
